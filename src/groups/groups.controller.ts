@@ -3,11 +3,13 @@ import {
     Body, 
     Controller, 
     Get, 
+    HttpCode, 
     Param, 
     Post, 
     Request,
     UseGuards
 } from '@nestjs/common'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -26,6 +28,10 @@ import { AddUserDto } from './dto/add-user.dto'
 import { GroupsService } from './groups.service'
 import { UsersService } from 'src/users/users.service'
 
+// schemas
+import { Group } from './schemas/group.schema'
+
+@ApiTags('Groups')
 @Controller('/api/groups')
 export class GroupsController {
     constructor(
@@ -33,6 +39,8 @@ export class GroupsController {
         private usersService: UsersService
     ) {}
 
+    @ApiOperation({ summary: 'Получение всех групп в учебном пространстве' })
+    @ApiResponse({ status: 200, type: [Group] })
     @Get()
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
@@ -47,9 +55,12 @@ export class GroupsController {
         }
     }
 
+    @ApiOperation({ summary: 'Создание группы в учебном пространстве' })
+    @ApiResponse({ status: 201, type: Group })
     @Post()
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
+    @HttpCode(201)
     async create(@Body() dto: CreateGroupDto, @Request() req) {
         const { user } = req
         const studySpaceId = user.studySpace._id
@@ -62,6 +73,8 @@ export class GroupsController {
         return this.groupsService.create(newDto)
     }
 
+    @ApiOperation({ summary: 'Добавление в группу пользователя через ID' })
+    @ApiResponse({ status: 200, type: Group })
     @Post('/:id/add-user')
     async addUser(@Body() dto: AddUserDto, @Param() params, @Request() req) {
         const { user: reqUser } = req

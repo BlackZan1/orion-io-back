@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import * as https from 'https'
-import * as fs from 'fs'
+import { ApiNoContentResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 // services
 import { FilesService } from './files.service'
@@ -18,23 +18,26 @@ import { FilesService } from './files.service'
 import { Public } from 'src/auth/public.decorator'
 
 // utils
-import { imgBucket } from 'utils/firebase-config'
+import { MulterFile } from 'utils/multer-storage'
 
+@ApiTags('Files')
 @Controller('/api/files')
 export class FilesController {
     constructor(
         private filesService: FilesService
     ) {}
 
+    @ApiOperation({ summary: 'Загрузить файл (ДЕМО) - Публичный' })
+    @ApiResponse({ status: 200, type: '{ fileUrl: string }' })
     @Public()
     @Post('upload')
     @UseInterceptors(FileInterceptor('image'))
     async upload(@UploadedFile() file: Express.Multer.File) {
-        const uploadedFile = await this.filesService.uploadFile(file)
-        
-        return uploadedFile
+        return this.filesService.uploadFile(file)
     }
 
+    @ApiOperation({ summary: 'Получить файл (ДЕМО) - Публичный' })
+    @ApiNoContentResponse()
     @Public()
     @Get(':filename')
     async get(@Param() params, @Res() res) {

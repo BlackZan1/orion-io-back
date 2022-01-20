@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { ApiProperty } from '@nestjs/swagger'
 import { Document, Types } from 'mongoose'
 
 // schemas
@@ -9,6 +10,7 @@ import { User } from 'src/users/schemas/user.schema'
     timestamps: false
 })
 export class Jwt {
+    @ApiProperty({ example: 'asdasdasd12312kl3jaslek', description: 'Токен' })
     @Prop({ required: true })
     refreshToken: string
 

@@ -10,6 +10,7 @@ import {
     UseInterceptors
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -27,7 +28,9 @@ import { CreateStudySpaceDto } from './dto/create-study-space.dto'
 // services
 import { StudySpaceService } from './study-space.service'
 import { FilesService } from 'src/files/files.service'
+import { StudySpace } from './schemas/study-space.schema'
 
+@ApiTags('Study space (Учебное пространство - основная платформа)')
 @Controller('/api/study-space')
 export class StudySpaceController {
     constructor(
@@ -35,6 +38,8 @@ export class StudySpaceController {
         private filesService: FilesService
     ) {}
 
+    @ApiOperation({ summary: 'Получение учебного пространства' })
+    @ApiResponse({ status: 200, type: StudySpace })
     @Get()
     async get(@Request() req) {
         const { user } = req
@@ -43,13 +48,8 @@ export class StudySpaceController {
         return this.studySpaceService.getById(studySpaceId)
     }
 
-    @Get(':id')
-    async getById(@Param() params) {
-        const { id } = params
-
-        return this.studySpaceService.getById(id)
-    }
-
+    @ApiOperation({ summary: 'Создание учебного пространства' })
+    @ApiResponse({ status: 201, type: StudySpace })
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     async create(@Body() dto: CreateStudySpaceDto, @UploadedFile() file: Express.Multer.File) {
@@ -64,6 +64,8 @@ export class StudySpaceController {
         return this.studySpaceService.create(newDto)
     }
 
+    @ApiOperation({ summary: 'Создание пользователя прямо в учебном пространстве (Полезно для адмонов)' })
+    @ApiResponse({ status: 201, type: StudySpace })
     @Post('/create-user') 
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
@@ -83,6 +85,8 @@ export class StudySpaceController {
         return this.studySpaceService.addUser(studySpaceId, newDto)
     }
 
+    @ApiOperation({ summary: 'Добавление пользователя в учебном пространстве через ID (DEMO)' })
+    @ApiResponse({ status: 200, type: StudySpace })
     @Post('/demo/add-user/:id') 
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
@@ -94,6 +98,8 @@ export class StudySpaceController {
         return this.studySpaceService.addUserById(studySpaceId, id)
     }
 
+    @ApiOperation({ summary: 'Добавление группы в учебном пространстве через ID (DEMO)' })
+    @ApiResponse({ status: 200, type: StudySpace })
     @Post('/demo/add-group/:id') 
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)

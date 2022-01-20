@@ -7,15 +7,20 @@ import {
   UploadedFile, 
   UseInterceptors 
 } from '@nestjs/common'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 // services
 import { UsersService } from './users/users.service'
 import { AppService } from './app.service'
-import { FileInterceptor } from '@nestjs/platform-express'
+
+// schemas
+import { User } from './users/schemas/user.schema'
 
 // utils
 import { MulterFile } from 'utils/multer-storage'
 
+@ApiTags('Common')
 @Controller('api')
 export class AppController {
   constructor(
@@ -23,11 +28,8 @@ export class AppController {
     private usersService: UsersService
   ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello()
-  }
-
+  @ApiOperation({ summary: 'Загрузка нового фото для пользователя' })
+  @ApiResponse({ status: 200, type: User })
   @Post('upload-photo')
   @UseInterceptors(FileInterceptor('photo'))
   async updatePhoto(@Request() req, @UploadedFile() file: MulterFile) {

@@ -10,6 +10,7 @@ import {
     UseInterceptors
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 // services
 import { UsersService } from 'src/users/users.service'
@@ -27,6 +28,11 @@ import { JwtAuthGuard } from './guards/jwt.guard'
 // decorators
 import { Public } from './public.decorator'
 
+// schemas
+import { User } from 'src/users/schemas/user.schema'
+import { Jwt } from './schemas/jwt.schema'
+
+@ApiTags('Authorization')
 @Controller('/api/auth')
 export class AuthController {
     constructor(
@@ -35,6 +41,8 @@ export class AuthController {
         private filesService: FilesService
     ) {}
 
+    @ApiOperation({ summary: 'Регистрация - Публичный' })
+    @ApiResponse({ status: 201, type: User })
     @Public()
     @Post('register')
     @UseInterceptors(FileInterceptor('photo'))
@@ -51,6 +59,8 @@ export class AuthController {
         return this.usersService.createUser(newDto)
     }
 
+    @ApiOperation({ summary: 'Регистрация админа (ДЕМО) - Публичный' })
+    @ApiResponse({ status: 201, type: User })
     @Public()
     @Post('register-admin')
     @UseInterceptors(FileInterceptor('photo'))
@@ -67,6 +77,8 @@ export class AuthController {
         return this.usersService.createAdmin(newDto)
     }
 
+    @ApiOperation({ summary: 'Вход - Публичный' })
+    @ApiResponse({ status: 200, type: User })
     @Public()
     @UseGuards(LocalAuthGuard)
     @Post('login')
@@ -80,11 +92,15 @@ export class AuthController {
         })
     }
 
+    @ApiOperation({ summary: 'Получение нового токена' })
+    @ApiResponse({ status: 200, type: Jwt })
     @Post('refresh')
     async refresh(@Body() refreshDto: RefreshTokenDto) {
         return this.authService.refreshToken(refreshDto.refreshToken)
     }
 
+    @ApiOperation({ summary: 'Получение данных пользователя' })
+    @ApiResponse({ status: 200, type: User })
     @UseGuards(JwtAuthGuard)
     @Get('me')
     me(@Request() req) {
