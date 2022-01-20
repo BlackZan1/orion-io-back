@@ -5,6 +5,9 @@ import {} from 'mongodb'
 import { RolesService } from 'src/roles/roles.service'
 import * as bcrypt from 'bcryptjs'
 
+// services
+import { FilesService } from 'src/files/files.service'
+
 // dto
 import { CreateUserDto } from './dto/create-user.dto'
 
@@ -14,12 +17,16 @@ import { User, UserDocument } from './schemas/user.schema'
 // config
 import { ConfigService } from '@nestjs/config'
 
+// utils
+import { MulterFile } from 'utils/multer-storage'
+
 @Injectable()
 export class UsersService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         private rolesService: RolesService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private filesService: FilesService
     ) {}
 
     async create(dto: CreateUserDto): Promise<UserDocument> {
@@ -83,5 +90,13 @@ export class UsersService {
 
     async getByStudySpace(name: string): Promise<UserDocument[]> {
         return this.userModel.find({ 'studySpace.name': name })
+    }
+
+    async updatePhoto(id: string, file: MulterFile): Promise<UserDocument> {
+        const uploadedFile = await this.filesService.uploadFile(file)
+
+        await this.userModel.findById(id).updateOne({ photo: uploadedFile.filename })
+
+        return this.getById(id)
     }
 }

@@ -2,21 +2,23 @@ import {
     Body, 
     Controller, 
     Get, 
-    Headers, 
     HttpCode,
-    HttpException,
-    HttpStatus,
     Post,
     Request,
-    UseGuards
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
 } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 // services
 import { UsersService } from 'src/users/users.service'
 import { AuthService } from './auth.service'
+import { FilesService } from 'src/files/files.service'
 
 // dto
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
+import { RefreshTokenDto } from './dto/refresh-token.dto'
 
 // guards
 import { LocalAuthGuard } from './guards/local.guard'
@@ -24,28 +26,45 @@ import { JwtAuthGuard } from './guards/jwt.guard'
 
 // decorators
 import { Public } from './public.decorator'
-import { RefreshTokenDto } from './dto/refresh-token.dto'
 
 @Controller('/api/auth')
 export class AuthController {
     constructor(
-        // private configService: ConfigService,
         private usersService: UsersService,
-        private authService: AuthService
+        private authService: AuthService,
+        private filesService: FilesService
     ) {}
 
     @Public()
     @Post('register')
+    @UseInterceptors(FileInterceptor('photo'))
     @HttpCode(201)
-    async create(@Body() userDto: CreateUserDto) {
-        return this.usersService.createUser(userDto)
+    async create(@Body() dto: CreateUserDto, @UploadedFile() file: Express.Multer.File) {
+        let newDto = { ...dto }
+
+        if(file) {
+            const photo = await this.filesService.uploadFile(file)
+
+            newDto.photo = photo.filename
+        }
+
+        return this.usersService.createUser(newDto)
     }
 
     @Public()
     @Post('register-admin')
+    @UseInterceptors(FileInterceptor('photo'))
     @HttpCode(201)
-    async createAdmin(@Body() userDto: CreateUserDto) {
-        return this.usersService.createAdmin(userDto)
+    async createAdmin(@Body() dto: CreateUserDto, @UploadedFile() file: Express.Multer.File) {
+        let newDto = { ...dto }
+
+        if(file) {
+            const photo = await this.filesService.uploadFile(file)
+
+            newDto.photo = photo.filename
+        }
+
+        return this.usersService.createAdmin(newDto)
     }
 
     @Public()

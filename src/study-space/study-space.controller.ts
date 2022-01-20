@@ -5,8 +5,11 @@ import {
     Param, 
     Post, 
     Request, 
-    UseGuards 
+    UploadedFile, 
+    UseGuards, 
+    UseInterceptors
 } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -23,11 +26,13 @@ import { CreateStudySpaceDto } from './dto/create-study-space.dto'
 
 // services
 import { StudySpaceService } from './study-space.service'
+import { FilesService } from 'src/files/files.service'
 
 @Controller('/api/study-space')
 export class StudySpaceController {
     constructor(
-        private studySpaceService: StudySpaceService
+        private studySpaceService: StudySpaceService,
+        private filesService: FilesService
     ) {}
 
     @Get()
@@ -46,18 +51,36 @@ export class StudySpaceController {
     }
 
     @Post()
-    async create(@Body() studySpaceDto: CreateStudySpaceDto) {
-        return this.studySpaceService.create(studySpaceDto)
+    @UseInterceptors(FileInterceptor('image'))
+    async create(@Body() dto: CreateStudySpaceDto, @UploadedFile() file: Express.Multer.File) {
+        let newDto = { ...dto }
+
+        if(file) {
+            const photo = await this.filesService.uploadFile(file)
+
+            newDto.image = photo.filename
+        }
+
+        return this.studySpaceService.create(newDto)
     }
 
     @Post('/create-user') 
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
-    async createUser(@Request() req, @Body() userDto: CreateUserDto) {
+    @UseInterceptors(FileInterceptor('photo'))
+    async createUser(@Request() req, @Body() userDto: CreateUserDto, @UploadedFile() file: Express.Multer.File) {
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        return this.studySpaceService.addUser(studySpaceId, userDto)
+        let newDto = { ...userDto }
+
+        if(file) {
+            const photo = await this.filesService.uploadFile(file)
+
+            newDto.photo = photo.filename
+        }
+
+        return this.studySpaceService.addUser(studySpaceId, newDto)
     }
 
     @Post('/demo/add-user/:id') 

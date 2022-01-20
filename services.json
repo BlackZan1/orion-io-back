@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "fir-monki-scoring",
+  "private_key_id": "ab9e3cf8bd828489c0b072222d2810d456dd1ce7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCvFxQ65GcsQLCf\nPCL5roLssMHNDheM3Xm8vTyk4bzj9pPXL9p/7gTfgTO9bxLMUVE0CG/Wc6i7Boxb\nGm74tLTTU3PcSKqUkC/C+deu71/05rV7LCEt1+JLiSe6k6f0trLPVXtgwgqWMt06\n+5aIiVlurP+AfkujdW2oMCDpmbpkxLMKmh3UkSf3wbEAUXAtCSaGHZ1pHWxXZVVK\nzEUbvRTFdrQ5miyhyQ0dbK4LFKa45rNmVFhRqQBvx5mkKJDIYl9g5xc5+fKkVkcp\niu/l3vz9S80UO1wBYv71tQlhCgSPz0hTGaMHlRF4XzvSPcmyn1oirpteZNGNez+7\n9BR4hPC7AgMBAAECggEAB503UgBQxEnj5GjXFIiURPrC0soEGCoheyW3l2wBrOAy\nOa9pDxsotxeFSn2kEaKPp3Wed3L8KXX1cJjLrqEdI/uDFFdMo71Jdm8rA/6A68OE\nrOCUaMv0mVhTk/eL3EZ9rCqJfQGzOCjqGgCK4VEnxHpdehcD7w3SQPgm1kHLK0qY\nBOrVoisjg8V/KFDgg4Eg9A6edJUSrdTz8Rpne6A6VcqUxVL5gkyPZMRkfnyCKbJs\nuHC+orZ+KhFNOiFFbZeGO0z3I4Cu9cYyb2pV2IpcfnwVRn5oqksRi40UuHwsOQE0\n82DdWLh+agJKJUlMRnCkAkTDJyAosSMk1PeIGcXV4QKBgQDqEVaE5kVYjAl9Sbe6\nKyfAH6a6sNvj0hum2Z1URYzfY3BwaGNh2LMdW5g34yDVjfoxstweuvTVIvLD12Vd\nkMtl0qFOTTx4Zl50qc4qmlL8rWrYX+PfYonCpMUZWJnroMT5w6kea78lG5ZNy3Gh\nhmiWxLsyIDbGxkJAYnrWSueqOQKBgQC/fwalmIi9X8WXnXJLFPSU0qbOT74Ysper\nYg/PD1e8HjbmOoLjdnDd2kgK05tfEnBU5AXfGCEjKmMAP4N23gn3U2t4wlvi77d9\nM1E6KwMEAjftd3gULmmCJN3yxEVG/3CH/tasWTM9KM2WN1pMfEFSdzZK5GrHpxSI\nDXMJ9nfCkwKBgHORV+yKXVbY3Z6UlThAMoIznniy9f7IMIrzCzEene12BYAaqmcX\nPWiTXtbJN975GL0NGI27tUK+3KpBYXUPFr4Rfz9P9zljIePsKzTxuWO0o/ptbe9P\nkcEe5YocKvMiD99Z8dhpTpkdw9ppRpN/74fxXpPjP+ho3zE27nt7xGJRAoGBALNj\nOoXME2RboE08eAHv2oLDpvEj8G9QdhZdYXPV6plWMJWSAGU24dpiDhTeT/FK46IS\njZGFGB3KKj3kQbILpIhlRAs2/z7i0x/c/92ex09tCJlSzlERfVMmWCiARmmRBwjO\n6KlBUmebnqN2rQdzavnmpRyZR5JKaUheWQLfOSczAoGBAIRyikmoeJGNmJ0blp7Y\nvm6rMLcZkkFv9gMJCz9w4KJV1eZnbj2U4bQ5FbuWKxGldizEHtEplWmVJ/UM7Y3H\nWSV6Dm+oPljaRN8cMI2/Yn0Sp5UxKIcF6U25xCh1mEoMZ+ALFbEGF91ywdRaJiGj\nK8anQx2LOOkFvf5qBlX89oYo\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-wv0bx@fir-monki-scoring.iam.gserviceaccount.com",
+  "client_id": "115049102517331970568",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-wv0bx%40fir-monki-scoring.iam.gserviceaccount.com"
+}

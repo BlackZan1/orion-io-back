@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 
 // modules
 import { UsersModule } from 'src/users/users.module'
+import { FilesModule } from 'src/files/files.module'
 
 // services
 import { AuthService } from './auth.service'
@@ -27,6 +28,7 @@ import config from 'config/configuration'
     imports: [ 
         UsersModule, 
         PassportModule,
+        FilesModule,
         MongooseModule.forFeature([
             { name: Jwt.name, schema: JwtSchema  }
         ]),

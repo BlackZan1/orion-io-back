@@ -5,6 +5,9 @@ import { Document, Schema as MongoSchema } from 'mongoose'
 import { Role } from 'src/roles/schemas/role.schema'
 import { StudySpace } from 'src/study-space/schemas/study-space.schema'
 
+// config
+import configuration from 'config/configuration'
+
 @Schema({ 
     versionKey: false, 
     timestamps: true, 
@@ -54,6 +57,13 @@ export type UserDocument = User & Document
 export const UserSchema = SchemaFactory.createForClass(User)
 
 UserSchema.virtual('id')
-.get(function () {
+.get(function() {
     return this._id.toHexString()
+})
+
+UserSchema.virtual('photoUrl')
+.get(function() {
+    if(!this.photo) return null
+
+    return configuration().baseUrl + 'files/' + this.photo
 })

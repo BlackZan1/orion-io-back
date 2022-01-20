@@ -5,5 +5,6 @@ export default () => ({
     jwtRefreshSecret: 'asdyiuhiuh12u3h1iu23h127y3871hkjdnvkapso',
     database: {
         MONGO_URI: 'mongodb+srv://nazar:nazar123123@orion-io.ikdqk.mongodb.net/main-db?retryWrites=true&w=majority'
-    }
+    },
+    baseUrl: 'http://localhost:5000/api/'
 })

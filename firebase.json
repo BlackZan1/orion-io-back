@@ -1,0 +1,11 @@
+{
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "bindings":[
+    {
+      "role": "roles/storage.objectViewer",
+      "members":["allUsers"]
+    }
+  ]
+}

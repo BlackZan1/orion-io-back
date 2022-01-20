@@ -5,6 +5,9 @@ import { Document, Types } from 'mongoose'
 import { User } from 'src/users/schemas/user.schema'
 import { Group } from 'src/groups/schemas/group.schema'
 
+// config
+import configuration from 'config/configuration'
+
 @Schema({
     versionKey: false,
     timestamps: true,
@@ -43,4 +46,11 @@ StudySpaceSchema.virtual('id')
 StudySpaceSchema.virtual('membersCount')
 .get(function () {
     return this.members.length
+})
+
+StudySpaceSchema.virtual('imageUrl')
+.get(function() {
+    if(!this.image) return null
+    
+    return configuration().baseUrl + 'files/' + this.image
 })
