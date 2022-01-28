@@ -1,18 +1,22 @@
 import { 
   BadRequestException,
   Controller, 
-  Get, 
   Post, 
   Request, 
   UploadedFile, 
   UseInterceptors 
 } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+  ApiBearerAuth, 
+  ApiBody, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiTags 
+} from '@nestjs/swagger'
 import { FileInterceptor } from '@nestjs/platform-express'
 
 // services
 import { UsersService } from './users/users.service'
-import { AppService } from './app.service'
 
 // schemas
 import { User } from './users/schemas/user.schema'
@@ -21,15 +25,25 @@ import { User } from './users/schemas/user.schema'
 import { MulterFile } from 'utils/multer-storage'
 
 @ApiTags('Common')
+@ApiBearerAuth()
 @Controller('api')
 export class AppController {
   constructor(
-    private appService: AppService,
     private usersService: UsersService
   ) {}
 
   @ApiOperation({ summary: 'Загрузка нового фото для пользователя' })
   @ApiResponse({ status: 200, type: User })
+  @ApiBody({
+    schema: {
+      properties: {
+        file: {
+          type: 'string',
+          format: 'file'
+        }
+      }
+    }
+  })
   @Post('upload-photo')
   @UseInterceptors(FileInterceptor('photo'))
   async updatePhoto(@Request() req, @UploadedFile() file: MulterFile) {

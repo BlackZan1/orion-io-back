@@ -9,7 +9,13 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import * as https from 'https'
-import { ApiNoContentResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+    ApiBearerAuth, 
+    ApiNoContentResponse, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiTags 
+} from '@nestjs/swagger'
 
 // services
 import { FilesService } from './files.service'
@@ -17,10 +23,8 @@ import { FilesService } from './files.service'
 // decoratots
 import { Public } from 'src/auth/public.decorator'
 
-// utils
-import { MulterFile } from 'utils/multer-storage'
-
 @ApiTags('Files')
+@ApiBearerAuth()
 @Controller('/api/files')
 export class FilesController {
     constructor(

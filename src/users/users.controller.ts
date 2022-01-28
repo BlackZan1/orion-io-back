@@ -5,7 +5,12 @@ import {
     Post, 
     UseGuards 
 } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+    ApiBearerAuth, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiTags 
+} from '@nestjs/swagger'
 import { RolesGuard } from 'src/roles/guards/roles.guard'
 import { Roles } from 'src/roles/roles.decorator'
 
@@ -22,6 +27,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UsersService } from './users.service'
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('/api/users')
 export class UsersController {
     constructor(private usersService: UsersService) {}

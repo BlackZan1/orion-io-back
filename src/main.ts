@@ -15,6 +15,7 @@ async function bootstrap() {
     .setTitle('IrionIO - Swagger')
     .setDescription('Docs and etc (Rest API)')
     .setVersion('v.1.0')
+    .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, swagger)

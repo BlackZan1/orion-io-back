@@ -8,7 +8,12 @@ import {
     Request, 
     UseGuards 
 } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+    ApiBearerAuth, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiTags 
+} from '@nestjs/swagger'
 
 // dto
 import { CreateEventDto } from 'src/events/dto/create-event.dto'
@@ -29,6 +34,7 @@ import { SchedulesService } from './schedules.service'
 import { Schedule } from './schemas/schedules.schema'
 
 @ApiTags('Schedules (Расписание на каждую группу)')
+@ApiBearerAuth()
 @Controller('/api/schedules')
 export class SchedulesController {
     constructor(

@@ -31,6 +31,7 @@ import { JwtAuthGuard } from './auth/guards/jwt.guard'
 
 // pipes
 import { ValidationPipe } from './pipes/validation.pipe'
+import { TokensModule } from './tokens/tokens.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { ValidationPipe } from './pipes/validation.pipe'
     GroupsModule,
     SchedulesModule,
     EventsModule,
-    FilesModule
+    FilesModule,
+    TokensModule
   ],
   controllers: [
     AppController

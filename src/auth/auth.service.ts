@@ -80,7 +80,7 @@ export class AuthService {
         const payload = { 
             userId: user._id,
             studySpaceId: user.studySpace._id,
-            role: user.role
+            role: user.role.value
         }
 
         const newToken = this.jwtService.sign(payload, { expiresIn: '30d', secret: this.configService.get('jwtRefreshSecret') })

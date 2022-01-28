@@ -9,7 +9,12 @@ import {
     Request,
     UseGuards
 } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+    ApiBearerAuth, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiTags 
+} from '@nestjs/swagger'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -32,6 +37,7 @@ import { UsersService } from 'src/users/users.service'
 import { Group } from './schemas/group.schema'
 
 @ApiTags('Groups')
+@ApiBearerAuth()
 @Controller('/api/groups')
 export class GroupsController {
     constructor(

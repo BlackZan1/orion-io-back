@@ -10,7 +10,13 @@ import {
     UseInterceptors
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+    ApiBearerAuth, 
+    ApiBody, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiTags 
+} from '@nestjs/swagger'
 
 // services
 import { UsersService } from 'src/users/users.service'
@@ -20,6 +26,7 @@ import { FilesService } from 'src/files/files.service'
 // dto
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
 import { RefreshTokenDto } from './dto/refresh-token.dto'
+import { SignInDto } from './dto/sign-in.dto'
 
 // guards
 import { LocalAuthGuard } from './guards/local.guard'
@@ -33,6 +40,7 @@ import { User } from 'src/users/schemas/user.schema'
 import { Jwt } from './schemas/jwt.schema'
 
 @ApiTags('Authorization')
+@ApiBearerAuth()
 @Controller('/api/auth')
 export class AuthController {
     constructor(
@@ -79,6 +87,7 @@ export class AuthController {
 
     @ApiOperation({ summary: 'Вход - Публичный' })
     @ApiResponse({ status: 200, type: User })
+    @ApiBody({ type: SignInDto })
     @Public()
     @UseGuards(LocalAuthGuard)
     @Post('login')
@@ -88,7 +97,7 @@ export class AuthController {
         return this.authService.getToken({ 
             userId: user._id,
             studySpaceId: user.studySpace._id,
-            role: user.role
+            role: user.role.value
         })
     }
 

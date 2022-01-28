@@ -10,7 +10,12 @@ import {
     UseInterceptors
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { 
+    ApiBearerAuth, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiTags 
+} from '@nestjs/swagger'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -31,6 +36,7 @@ import { FilesService } from 'src/files/files.service'
 import { StudySpace } from './schemas/study-space.schema'
 
 @ApiTags('Study space (Учебное пространство - основная платформа)')
+@ApiBearerAuth()
 @Controller('/api/study-space')
 export class StudySpaceController {
     constructor(
