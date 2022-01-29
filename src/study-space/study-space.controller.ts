@@ -33,6 +33,8 @@ import { CreateStudySpaceDto } from './dto/create-study-space.dto'
 // services
 import { StudySpaceService } from './study-space.service'
 import { FilesService } from 'src/files/files.service'
+
+// schemas
 import { StudySpace } from './schemas/study-space.schema'
 
 @ApiTags('Study space (Учебное пространство - основная платформа)')

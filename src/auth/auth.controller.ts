@@ -91,6 +91,7 @@ export class AuthController {
     @Public()
     @UseGuards(LocalAuthGuard)
     @Post('login')
+    @HttpCode(200)
     async login(@Request() req) {
         const { user } = req
 

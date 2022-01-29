@@ -70,14 +70,12 @@ export class UsersService {
         return this.userModel
             .find({})
             .populate('role')
-            .populate('studySpace')
     }
 
     async getByEmail(email: string): Promise<UserDocument> {
         return this.userModel
             .findOne({ email })
             .populate('role')
-            .populate('studySpace')
     }
 
     async getById(userId: any): Promise<UserDocument> {
@@ -85,7 +83,6 @@ export class UsersService {
             .findById(userId)
             .select('-password')
             .populate('role')
-            .populate('studySpace')
     }
 
     async getByStudySpace(name: string): Promise<UserDocument[]> {
