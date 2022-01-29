@@ -44,8 +44,6 @@ export class SchedulesController {
     @ApiOperation({ summary: 'Получение расписания по ID' })
     @ApiResponse({ status: 200, type: Schedule })
     @Get('/:id')
-    @Roles(RoleEnum.Admin)
-    @UseGuards(RolesGuard)
     async getById(@Param() params, @Request() req) {
         const { id } = params
         const { user } = req

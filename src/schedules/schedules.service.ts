@@ -26,7 +26,6 @@ export class SchedulesService {
     async getById(id: string, studySpaceId: any): Promise<ScheduleDocument> {
         const schedule = await this.scheduleModel
             .findById(id)
-            .populate({ path: 'group', select: 'studySpace' })
             .populate('monday')
             .populate('tuesday')
             .populate('wednesday')
