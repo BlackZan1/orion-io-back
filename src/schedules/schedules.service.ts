@@ -11,6 +11,8 @@ import { CreateScheduleDto } from './dto/create-schedule.dto'
 
 // schemas
 import { Schedule, ScheduleDocument } from './schemas/schedules.schema'
+import { EventDocument } from 'src/events/schemas/event.schema'
+import { UpdateEventDto } from 'src/events/dto/update-event.dto'
 
 @Injectable()
 export class SchedulesService {
@@ -40,11 +42,11 @@ export class SchedulesService {
         return schedule
     }
 
-    async addEvent(id: string, studySpaceId: string, dto: CreateEventDto): Promise<ScheduleDocument> {
+    async addEvent(id: string, studySpaceId: string, dto: CreateEventDto): Promise<EventDocument> {
         const schedule = await this.getById(id, studySpaceId)
-        const event = await this.eventsService.create(dto)
+        const event = await this.eventsService.create({ ...dto, schedule: schedule._id })
 
-        switch(parseFloat(dto.day)) {
+        switch(parseFloat(dto.day + '')) {
             case 1:
                 await schedule.updateOne({ $push: { monday: event._id } })
 
@@ -77,6 +79,91 @@ export class SchedulesService {
                 throw new BadRequestException('Day must be equal to days of week!')
         }
 
-        return this.getById(id, studySpaceId)
+        return event
+    }
+
+    async updateEvent(id: string, eventId: string, studySpaceId: string, dto: UpdateEventDto): Promise<EventDocument> {
+        const schedule = await this.getById(id, studySpaceId)
+        const event = await this.eventsService.getById(eventId, schedule._id)
+        
+        const prevEventDay = event.day
+
+        await event.updateOne(dto)
+
+        if(prevEventDay !== dto.day) {
+            switch(prevEventDay) {
+                case 1:
+                    await schedule.updateOne({ $pull: { monday: id } })
+    
+                    break
+                case 2:
+                    await schedule.updateOne({ $pull: { tuesday: id } })
+    
+                    break
+                case 3:
+                    await schedule.updateOne({ $pull: { wednesday: id } })
+    
+                    break
+                case 4:
+                    await schedule.updateOne({ $pull: { thursday: id } })
+    
+                    break
+                case 5:
+                    await schedule.updateOne({ $pull: { friday: id } })
+    
+                    break
+                case 6:
+                    await schedule.updateOne({ $pull: { saturday: id } })
+    
+                    break
+                case 7:
+                    await schedule.updateOne({ $pull: { sunday: id } })
+    
+                    break
+                default:
+                    throw new BadRequestException('Day must be equal to days of week!')
+            }
+
+            switch(parseFloat(dto.day + '')) {
+                case 1:
+                    await schedule.updateOne({ $push: { monday: id } })
+    
+                    break
+                case 2:
+                    await schedule.updateOne({ $push: { tuesday: id } })
+    
+                    break
+                case 3:
+                    await schedule.updateOne({ $push: { wednesday: id } })
+    
+                    break
+                case 4:
+                    await schedule.updateOne({ $push: { thursday: id } })
+    
+                    break
+                case 5:
+                    await schedule.updateOne({ $push: { friday: id } })
+    
+                    break
+                case 6:
+                    await schedule.updateOne({ $push: { saturday: id } })
+    
+                    break
+                case 7:
+                    await schedule.updateOne({ $push: { sunday: id } })
+    
+                    break
+                default:
+                    throw new BadRequestException('Day must be equal to days of week!')
+            }
+        }
+
+        return this.eventsService.getById(eventId, schedule._id)
+    }
+
+    async deleteEvent(id: string, eventId: string, studySpaceId: string) {
+        const schedule = await this.getById(id, studySpaceId)
+
+        return this.eventsService.delete(eventId, schedule._id)
     }
 }

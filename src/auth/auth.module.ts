@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 // modules
 import { UsersModule } from 'src/users/users.module'
 import { FilesModule } from 'src/files/files.module'
+import { TokensModule } from 'src/tokens/tokens.module'
 
 // services
 import { AuthService } from './auth.service'
@@ -29,6 +30,7 @@ import config from 'config/configuration'
         UsersModule, 
         PassportModule,
         FilesModule,
+        TokensModule,
         MongooseModule.forFeature([
             { name: Jwt.name, schema: JwtSchema  }
         ]),

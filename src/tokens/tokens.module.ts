@@ -31,6 +31,9 @@ import config from 'config/configuration'
         expiresIn: '1d'
       }
     })
+  ],
+  exports: [
+    TokensService
   ]
 })
 export class TokensModule {}

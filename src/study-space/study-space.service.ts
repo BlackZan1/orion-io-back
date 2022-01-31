@@ -29,16 +29,20 @@ export class StudySpaceService {
             // .populate('members')
     }
 
-    async getById(id: string): Promise<StudySpaceDocument> {
+    async getById(id: string, userId: any): Promise<StudySpaceDocument> {
         const spaceStudy = await this.studySpaceModel
             .findById(id)
-            // .populate('members')
-            .populate('groups')
+            .populate({
+                path: 'groups',
+                match: {
+                    members: { $in: userId }
+                }
+            })
 
         return spaceStudy
     }
 
-    async addUser(id: string, userDto: CreateUserDto): Promise<StudySpaceDocument> {
+    async addUser(id: string, userId: any, userDto: CreateUserDto): Promise<StudySpaceDocument> {
         const studySpace = await this.studySpaceModel.findById(id)
         const newUser = await this.usersService.createUser({ ...userDto, studySpace: studySpace._id  })
 
@@ -46,10 +50,10 @@ export class StudySpaceService {
 
         await studySpace.updateOne({ members })
 
-        return this.getById(studySpace._id)
+        return this.getById(studySpace._id, userId)
     }
 
-    async addUserById(id: string, userId: string) {
+    async addUserById(id: string, currentUserId: any, userId: string) {
         const studySpace = await this.studySpaceModel.findById(id)
         const user = await this.usersService.getById(userId)
 
@@ -61,11 +65,11 @@ export class StudySpaceService {
 
         await studySpace.updateOne({ $push: { members: user._id } })
 
-        return this.getById(studySpace._id)
+        return this.getById(studySpace._id, currentUserId)
     }
 
-    async addGroupById(id: any, groupId: any) {
-        const studySpace = await this.getById(id)
+    async addGroupById(id: any, userId: any, groupId: any) {
+        const studySpace = await this.getById(id, userId)
 
         if(studySpace.groups.find((i: any) => i.id === groupId)) {
             return studySpace
@@ -73,6 +77,6 @@ export class StudySpaceService {
 
         await studySpace.updateOne({ $push: { groups: groupId } })
 
-        return this.getById(studySpace._id)
+        return this.getById(studySpace._id, userId)
     }
 }

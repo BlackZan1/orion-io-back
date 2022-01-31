@@ -2,8 +2,10 @@ import {
     BadRequestException, 
     Body, 
     Controller, 
+    Delete, 
     Get, 
     Param, 
+    Patch, 
     Post, 
     Request, 
     UseGuards 
@@ -17,6 +19,7 @@ import {
 
 // dto
 import { CreateEventDto } from 'src/events/dto/create-event.dto'
+import { UpdateEventDto } from 'src/events/dto/update-event.dto'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -67,5 +70,35 @@ export class SchedulesController {
         if(!id.match(/^[0-9a-fA-F]{24}$/)) throw new BadRequestException('ID is not valid!')
 
         return this.schedulesService.addEvent(id, studySpaceId, dto)
+    }
+
+    @ApiOperation({ summary: 'Редактирование события в расписании (нужен ID)' })
+    @ApiResponse({ status: 200, type: Schedule })
+    @Patch('/:id/update-event/:eventId')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async updateEvent(@Body() dto: UpdateEventDto, @Param() params, @Request() req) {
+        const { id, eventId } = params
+        const { user } = req
+        const studySpaceId = user.studySpace.id
+
+        if(!id.match(/^[0-9a-fA-F]{24}$/)) throw new BadRequestException('ID is not valid!')
+
+        return this.schedulesService.updateEvent(id, eventId, studySpaceId, dto)
+    }
+
+    @ApiOperation({ summary: 'Удаление события в расписании (нужен ID)' })
+    @ApiResponse({ status: 200, type: Schedule })
+    @Delete('/:id/delete-event/:eventId')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async deleteEvent(@Param() params, @Request() req) {
+        const { id, eventId } = params
+        const { user } = req
+        const studySpaceId = user.studySpace.id
+
+        if(!id.match(/^[0-9a-fA-F]{24}$/)) throw new BadRequestException('ID is not valid!')
+
+        return this.schedulesService.deleteEvent(id, eventId, studySpaceId)
     }
 }

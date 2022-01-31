@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
+
+// schemas
+import { Schedule } from 'src/schedules/schemas/schedules.schema'
 
 @Schema({
     versionKey: false,
@@ -26,6 +29,12 @@ export class Event {
 
     @Prop({ required: true })
     endDate: string
+
+    @Prop({ required: true })
+    day: number
+
+    @Prop({ required: true, type: Types.ObjectId, ref: Schedule.name })
+    schedule: Schedule
 }
 
 export type EventDocument = Event & Document

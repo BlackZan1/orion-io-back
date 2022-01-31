@@ -14,6 +14,7 @@ import { GroupsController } from './groups.controller'
 
 // schemas
 import { Group, GroupSchema } from './schemas/group.schema'
+import { TokensModule } from 'src/tokens/tokens.module'
 
 @Module({
   providers: [GroupsService],
@@ -22,6 +23,7 @@ import { Group, GroupSchema } from './schemas/group.schema'
     StudySpaceModule,
     UsersModule,
     SchedulesModule,
+    TokensModule,
     MongooseModule.forFeature([
       { name: Group.name, schema: GroupSchema }
     ])

@@ -35,6 +35,8 @@ import { UsersService } from 'src/users/users.service'
 
 // schemas
 import { Group } from './schemas/group.schema'
+import { Token } from 'src/tokens/schemas/token.schema'
+import { User } from 'src/users/schemas/user.schema'
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -42,7 +44,7 @@ import { Group } from './schemas/group.schema'
 export class GroupsController {
     constructor(
         private groupsService: GroupsService,
-        private usersService: UsersService
+        private usersService: UsersService,
     ) {}
 
     @ApiOperation({ summary: 'Получение всех групп в учебном пространстве' })
@@ -76,7 +78,7 @@ export class GroupsController {
             studySpace: studySpaceId
         }
 
-        return this.groupsService.create(newDto)
+        return this.groupsService.create(user._id, newDto)
     }
 
     @ApiOperation({ summary: 'Добавление в группу пользователя через ID' })
@@ -96,5 +98,35 @@ export class GroupsController {
         if(userStudySpace.id !== reqUser.studySpace.id) throw new BadRequestException('Can not access to user!')
 
         return this.groupsService.addUser(id, user._id, studySpaceId)
+    }
+
+    @ApiOperation({ summary: 'Получение всех токенов группы через ID' })
+    @ApiResponse({ status: 200, type: [Token] })
+    @Get('/:id/tokens')
+    async getTokens(@Param() params, @Request() req) {
+        const { user } = req
+        const { id } = params
+        const studySpaceId = user.studySpace._id
+
+        const result = await this.groupsService.getTokens(id, studySpaceId)
+
+        return {
+            result
+        }
+    }
+
+    @ApiOperation({ summary: 'Получение всех участников группы через ID' })
+    @ApiResponse({ status: 200, type: [User] })
+    @Get('/:id/users')
+    async getUsers(@Param() params, @Request() req) {
+        const { user } = req
+        const { id } = params
+        const studySpaceId = user.studySpace._id
+
+        const result = await this.groupsService.getUsers(id, studySpaceId)
+
+        return {
+            result
+        }
     }
 }

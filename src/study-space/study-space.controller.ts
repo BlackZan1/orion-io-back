@@ -53,14 +53,15 @@ export class StudySpaceController {
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        return this.studySpaceService.getById(studySpaceId)
+        return this.studySpaceService.getById(studySpaceId, user._id)
     }
 
     @ApiOperation({ summary: 'Создание учебного пространства' })
     @ApiResponse({ status: 201, type: StudySpace })
     @Post()
     @UseInterceptors(FileInterceptor('image'))
-    async create(@Body() dto: CreateStudySpaceDto, @UploadedFile() file: Express.Multer.File) {
+    async create(@Body() dto: CreateStudySpaceDto, @Request() req, @UploadedFile() file: Express.Multer.File) {
+        const { user } = req
         let newDto = { ...dto }
 
         if(file) {
@@ -90,7 +91,7 @@ export class StudySpaceController {
             newDto.photo = photo.filename
         }
 
-        return this.studySpaceService.addUser(studySpaceId, newDto)
+        return this.studySpaceService.addUser(studySpaceId, user._id, newDto)
     }
 
     @ApiOperation({ summary: 'Добавление пользователя в учебном пространстве через ID (DEMO)' })
@@ -103,7 +104,7 @@ export class StudySpaceController {
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        return this.studySpaceService.addUserById(studySpaceId, id)
+        return this.studySpaceService.addUserById(studySpaceId, user._id, id)
     }
 
     @ApiOperation({ summary: 'Добавление группы в учебном пространстве через ID (DEMO)' })
@@ -116,6 +117,6 @@ export class StudySpaceController {
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        return this.studySpaceService.addGroupById(studySpaceId, id)
+        return this.studySpaceService.addGroupById(studySpaceId, user._id, id)
     }
 }

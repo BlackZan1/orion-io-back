@@ -25,6 +25,7 @@ import { TokenActions } from './tokens.enum'
 
 // dto
 import { CheckTokenDto } from './dto/check-token.dto'
+import { CreateTokenDto } from './dto/create-token.dto'
 
 @ApiTags('Tokens (Взаимодействия с токенами регистрации)')
 @Controller('api/tokens')
@@ -41,14 +42,14 @@ export class TokensController {
     }
 
     @ApiOperation({ summary: 'Генерация токена для ссылки'  })
-    @Get('generate')
+    @Post('generate')
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
     @HttpCode(201)
-    get(@Request() req) {
+    generate(@Request() req, @Body() dto: CreateTokenDto) {
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        return this.tokensService.generate(studySpaceId, TokenActions.createUser)
+        return this.tokensService.generate(studySpaceId, dto.groupId, TokenActions.createUser)
     }
 }
