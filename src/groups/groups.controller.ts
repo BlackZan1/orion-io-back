@@ -91,11 +91,7 @@ export class GroupsController {
 
         if(!id.match(/^[0-9a-fA-F]{24}$/)) throw new BadRequestException('ID is not valid!')
 
-        const user = await this.usersService.getById(dto.userId)
-        const userStudySpace: any = user.studySpace || {}
-
-        if(!user) throw new BadRequestException('User is not found!')
-        if(userStudySpace.id !== reqUser.studySpace.id) throw new BadRequestException('Can not access to user!')
+        const user = await this.usersService.getById(dto.userId, studySpaceId)
 
         return this.groupsService.addUser(id, user._id, studySpaceId)
     }

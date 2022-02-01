@@ -39,13 +39,13 @@ export class EventsService {
         return this.getById(id, scheduleId)
     }
 
-    async delete(id: string, scheduleId: any) {
+    async delete(id: string, scheduleId: any): Promise<any> {
         const event = await this.getById(id, scheduleId)
 
         await event.delete()
 
         return {
-            message: 'OK'
+            success: true
         }
     }   
 }

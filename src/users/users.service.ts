@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Schema, Types } from 'mongoose'
 import {} from 'mongodb'
@@ -78,22 +78,32 @@ export class UsersService {
             .populate('role')
     }
 
-    async getById(userId: any): Promise<UserDocument> {
-        return this.userModel
-            .findById(userId)
+    async getById(userId: any, studySpaceId: any): Promise<UserDocument> {
+        const user = await this.userModel
+            .findOne({
+                _id: userId,
+                studySpace: studySpaceId
+            })
             .select('-password')
             .populate('role')
+        
+        if(!user) throw new BadRequestException('User is not found!')
+
+        return user
     }
 
     async getByStudySpace(name: string): Promise<UserDocument[]> {
         return this.userModel.find({ 'studySpace.name': name })
     }
 
-    async updatePhoto(id: string, file: MulterFile): Promise<UserDocument> {
+    async updatePhoto(id: string, file: MulterFile): Promise<any> {
         const uploadedFile = await this.filesService.uploadFile(file)
 
-        await this.userModel.findById(id).updateOne({ photo: uploadedFile.filename })
+        await this.userModel
+            .findByIdAndUpdate(id, { photo: uploadedFile.filename })
 
-        return this.getById(id)
+        return {
+            success: true
+        }
     }
 }

@@ -43,7 +43,7 @@ export class GroupsService {
     }
 
     async getById(id: string, studySpaceId: any): Promise<GroupDocument> {
-        const group = this.groupModel
+        const group = await this.groupModel
             .findOne({
                 _id: id,
                 studySpace: studySpaceId
