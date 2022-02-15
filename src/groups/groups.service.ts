@@ -6,6 +6,7 @@ import { Model } from 'mongoose'
 import { StudySpaceService } from 'src/study-space/study-space.service'
 import { SchedulesService } from 'src/schedules/schedules.service'
 import { TokensService } from 'src/tokens/tokens.service'
+import { NewsService } from 'src/news/news.service'
 
 // dto
 import { CreateGroupDto } from './dto/create-group.dto'
@@ -20,7 +21,8 @@ export class GroupsService {
         @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
         private studySpaceService: StudySpaceService,
         private schedulesService: SchedulesService,
-        private tokensService: TokensService
+        private tokensService: TokensService,
+        private newsService: NewsService
     ) {}
 
     async create(userId: any, dto: CreateGroupDto): Promise<GroupDocument> {
@@ -48,7 +50,13 @@ export class GroupsService {
                 _id: id,
                 studySpace: studySpaceId
             })
-            .populate({ path: 'members', select: '-password' })
+            .populate({ 
+                path: 'members', 
+                select: '-password',
+                populate: {
+                    path: 'role'
+                }
+            })
 
         if(!group) throw new BadRequestException('Group is not found!')
 
@@ -81,9 +89,30 @@ export class GroupsService {
         return this.tokensService.getAllByGroupId(group.id)
     }
 
-    async getUsers(id: string, studySpaceId: any ) {
+    async getUsers(id: string, studySpaceId: any, query: any) {
         const group = await this.getById(id, studySpaceId)
 
-        return group.members
+        let limit = 10, page = 1
+
+        if(query.page) page = +query.page
+        if(query.limit) limit = +query.limit
+
+        let all = limit * page
+
+        const result = group.members.slice(all - limit, all)
+
+        return {
+            result,
+            allCount: group.members.length,
+            userCount: group.members.filter((i) => i.role.value === 'user').length,
+            superUserCount: group.members.filter((i) => i.role.value === 'superUser').length,
+            adminCount: group.members.filter((i) => i.role.value === 'admin').length
+        }
+    }
+
+    async getNews(id: string, studySpaceId: any, query: any) {
+        const group = await this.getById(id, studySpaceId)
+        
+        return this.newsService.getAll(group._id, query)
     }
 }

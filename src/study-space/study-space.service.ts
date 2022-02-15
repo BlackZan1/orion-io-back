@@ -55,7 +55,7 @@ export class StudySpaceService {
 
     async addUserById(id: string, currentUserId: any, userId: string) {
         const studySpace = await this.studySpaceModel.findById(id)
-        const user = await this.usersService.getById(userId)
+        const user = await this.usersService.getById(userId, studySpace._id)
 
         if(!user) throw new BadRequestException('User is not found')
 

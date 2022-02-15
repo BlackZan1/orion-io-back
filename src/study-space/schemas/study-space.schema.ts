@@ -49,11 +49,6 @@ StudySpaceSchema.virtual('id')
     return this._id.toHexString()
 })
 
-StudySpaceSchema.virtual('membersCount')
-.get(function () {
-    return this.members.length
-})
-
 StudySpaceSchema.virtual('imageUrl')
 .get(function() {
     if(!this.image) return null

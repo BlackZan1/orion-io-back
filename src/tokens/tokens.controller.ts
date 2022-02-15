@@ -1,13 +1,14 @@
 import { 
     Body, 
     Controller, 
-    Get, 
+    Delete, 
     HttpCode, 
+    Param, 
     Post, 
     Request, 
     UseGuards 
 } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 // services
 import { TokensService } from './tokens.service'
@@ -41,7 +42,8 @@ export class TokensController {
         return this.tokensService.check(dto.token)
     }
 
-    @ApiOperation({ summary: 'Генерация токена для ссылки'  })
+    @ApiOperation({ summary: 'Генерация токена пользователя для ссылки'  })
+    @ApiResponse({ status: 201, type: CreateTokenDto })
     @Post('generate')
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
@@ -51,5 +53,41 @@ export class TokensController {
         const studySpaceId = user.studySpace._id
 
         return this.tokensService.generate(studySpaceId, dto.groupId, TokenActions.createUser)
+    }
+
+    @ApiOperation({ summary: 'Генерация токена админа для ссылки'  })
+    @ApiResponse({ status: 201, type: CreateTokenDto })
+    @Post('generate-admin')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    @HttpCode(201)
+    generateAdmin(@Request() req, @Body() dto: CreateTokenDto) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        return this.tokensService.generate(studySpaceId, dto.groupId, TokenActions.createAdmin)
+    }
+
+    @ApiOperation({ summary: 'Генерация токена модератора для ссылки'  })
+    @ApiResponse({ status: 201, type: CreateTokenDto })
+    @Post('generate-superUser')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    @HttpCode(201)
+    generateSuperUser(@Request() req, @Body() dto: CreateTokenDto) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        return this.tokensService.generate(studySpaceId, dto.groupId, TokenActions.createSuperUser)
+    }
+
+    @ApiOperation({ summary: 'Удаление токена'  })
+    @Delete('/:id')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    delete(@Param() params) {
+        const { id } = params
+
+        return this.tokensService.delete(id)
     }
 }

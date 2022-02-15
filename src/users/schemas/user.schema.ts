@@ -83,5 +83,6 @@ UserSchema.virtual('photoUrl')
 .get(function() {
     if(!this.photo) return null
 
-    return configuration().baseUrl + 'files/' + this.photo
+    // return configuration().baseUrl + 'files/' + this.photo
+    return `https://firebasestorage.googleapis.com/v0/b/fir-monki-scoring.appspot.com/o/${this.photo}?alt=media&token=751f5d3f-b41a-40a7-948a-6156f646f57d`
 })

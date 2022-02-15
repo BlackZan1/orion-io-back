@@ -8,6 +8,9 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { UsersModule } from 'src/users/users.module'
 import { FilesModule } from 'src/files/files.module'
 import { TokensModule } from 'src/tokens/tokens.module'
+import { StudySpaceModule } from 'src/study-space/study-space.module'
+import { MulterModule } from '@nestjs/platform-express'
+import { GroupsModule } from 'src/groups/groups.module'
 
 // services
 import { AuthService } from './auth.service'
@@ -21,6 +24,7 @@ import { Jwt, JwtSchema } from './schemas/jwt.schema'
 
 // utils
 import config from 'config/configuration'
+import { multerStorage } from 'utils/multer-storage'
 
 @Module({
     controllers: [ 
@@ -31,9 +35,14 @@ import config from 'config/configuration'
         PassportModule,
         FilesModule,
         TokensModule,
+        StudySpaceModule,
+        GroupsModule,
         MongooseModule.forFeature([
             { name: Jwt.name, schema: JwtSchema  }
         ]),
+        MulterModule.register({
+            storage: multerStorage
+        }),
         JwtModule.register({
             secret: config().jwtSecret,
             signOptions: {

@@ -18,6 +18,9 @@ export class Token {
 
     @Prop({ required: true, type: Types.ObjectId, ref: Group.name })
     group: Group
+
+    @Prop({ default: null })
+    forRole: string
 }
 
 export type TokenDocument = Token & Document

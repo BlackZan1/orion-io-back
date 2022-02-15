@@ -1,5 +1,6 @@
 import { 
   BadRequestException,
+  Body,
   Controller, 
   Post, 
   Request, 
@@ -15,8 +16,14 @@ import {
 } from '@nestjs/swagger'
 import { FileInterceptor } from '@nestjs/platform-express'
 
+// dto
+import { CheckEmailDto } from './users/dto/check-email.dto'
+
 // services
 import { UsersService } from './users/users.service'
+
+// decorators
+import { Public } from './auth/public.decorator'
 
 // schemas
 import { User } from './users/schemas/user.schema'
@@ -53,5 +60,24 @@ export class AppController {
     if(!file.filename) throw new BadRequestException('Error with file uploading')
 
     return this.usersService.updatePhoto(user.id, file)
+  }
+
+  @ApiOperation({ summary: 'Проверка на наличие зарегистрированного email - Публичный' })
+  @Public()
+  @Post('check-email')
+  async checkEmail(@Body() dto: CheckEmailDto) {
+    const { email } = dto
+
+    const user = await this.usersService.getByEmail(email)
+
+    if(!user) {
+      return {
+        success: true
+      }
+    }
+
+    return {
+      success: false
+    }
   }
 }

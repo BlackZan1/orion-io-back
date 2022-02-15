@@ -46,15 +46,15 @@ export class StudySpaceController {
         private filesService: FilesService
     ) {}
 
-    @ApiOperation({ summary: 'Получение учебного пространства' })
-    @ApiResponse({ status: 200, type: StudySpace })
-    @Get()
-    async get(@Request() req) {
-        const { user } = req
-        const studySpaceId = user.studySpace._id
+    // @ApiOperation({ summary: 'Получение учебного пространства' })
+    // @ApiResponse({ status: 200, type: StudySpace })
+    // @Get()
+    // async get(@Request() req) {
+    //     const { user } = req
+    //     const studySpaceId = user.studySpace._id
 
-        return this.studySpaceService.getById(studySpaceId, user._id)
-    }
+    //     return this.studySpaceService.getById(studySpaceId, user._id)
+    // }
 
     @ApiOperation({ summary: 'Создание учебного пространства' })
     @ApiResponse({ status: 201, type: StudySpace })
@@ -87,8 +87,8 @@ export class StudySpaceController {
 
         if(file) {
             const photo = await this.filesService.uploadFile(file)
-
-            newDto.photo = photo.filename
+ 
+            newDto.photo = photo.filename as any
         }
 
         return this.studySpaceService.addUser(studySpaceId, user._id, newDto)

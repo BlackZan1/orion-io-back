@@ -2,7 +2,9 @@ import {
     Body, 
     Controller, 
     Get, 
+    Param, 
     Post, 
+    Request, 
     UseGuards 
 } from '@nestjs/common'
 import { 
@@ -41,6 +43,16 @@ export class UsersController {
         return {
             results
         }
+    }
+
+    @ApiOperation({ summary: 'Получение пользователя по ID' })
+    @ApiResponse({ status: 200, type: User })
+    @Get('/:id')
+    getById(@Request() req, @Param() params) {
+        const { id } = params
+        const studySpaceId = req.user.studySpace._id
+
+        return this.usersService.getById(id, studySpaceId)
     }
 
     @ApiOperation({ summary: 'Создание пользователя (ДЕМО)' })

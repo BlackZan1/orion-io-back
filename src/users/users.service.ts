@@ -56,6 +56,16 @@ export class UsersService {
         return this.create(admin)
     }
 
+    async createSuperUser(dto: CreateUserDto) {
+        const suRole = await this.rolesService.getSuperUser()
+        const superUser = {
+            ...dto,
+            role: suRole._id
+        }
+
+        return this.create(superUser)
+    }
+
     async createUser(dto: CreateUserDto) {
         const userRole = await this.rolesService.getUser()
         const user = {
@@ -78,14 +88,18 @@ export class UsersService {
             .populate('role')
     }
 
-    async getById(userId: any, studySpaceId: any): Promise<UserDocument> {
+    async getById(userId: any, studySpaceId?: any): Promise<UserDocument> {
+        const findParams = {
+            _id: userId
+        }
+
+        if(studySpaceId) findParams['studySpace'] = studySpaceId
+
         const user = await this.userModel
-            .findOne({
-                _id: userId,
-                studySpace: studySpaceId
-            })
+            .findOne(findParams)
             .select('-password')
             .populate('role')
+            .populate({ path: 'studySpace', select: 'name' })
         
         if(!user) throw new BadRequestException('User is not found!')
 

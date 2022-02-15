@@ -17,10 +17,29 @@ export class TokensService {
     ) {}
 
     async generate(studySpaceId: string, groupId: any, action: TokenActions): Promise<TokenDocument> {
+        let forRole: 'admin' | 'superUser' | 'user'
+
+        switch(action) {
+            case TokenActions.createAdmin:
+                forRole = 'admin'
+
+                break
+            case TokenActions.createSuperUser:
+                forRole = 'superUser'
+
+                break
+            case TokenActions.createUser:
+            default:
+                forRole = 'user'
+
+                break
+        }
+
         const dto = {
             token: this.jwtService.sign({ studySpaceId, groupId, action }),
             studySpace: studySpaceId,
-            group: groupId
+            group: groupId,
+            forRole
         }
 
         return new this.tokenModel(dto).save()
@@ -37,17 +56,21 @@ export class TokensService {
 
             return {
                 action: decodeToken.action,
-                success: true
+                success: true,
+                groupId: decodeToken.groupId,
+                studySpaceId: decodeToken.studySpaceId
             }
         }
         catch(err) {
+            await this.delete(token)
+
             throw new BadRequestException('Token is already expired!')
         }
     }
 
     async delete(token: string) {
         return this.tokenModel
-            .findOneAndDelete({ token })
+            .findOneAndDelete({ token})
     }
 
     async getAllByGroupId(groupId: any): Promise<TokenDocument[]> {

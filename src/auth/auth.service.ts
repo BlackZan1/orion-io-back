@@ -58,7 +58,7 @@ export class AuthService {
             }
         }
 
-        tokenModel.updateOne({
+        await tokenModel.updateOne({
             refreshToken: newToken.refreshToken
         })
 
@@ -85,7 +85,7 @@ export class AuthService {
 
         const newToken = this.jwtService.sign(payload, { expiresIn: '30d', secret: this.configService.get('jwtRefreshSecret') })
 
-        tokenModel.updateOne({
+        await tokenModel.updateOne({
             refreshToken: newToken
         })
 

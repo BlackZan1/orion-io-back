@@ -6,6 +6,7 @@ import {
     HttpCode, 
     Param, 
     Post, 
+    Query, 
     Request,
     UseGuards
 } from '@nestjs/common'
@@ -37,6 +38,7 @@ import { UsersService } from 'src/users/users.service'
 import { Group } from './schemas/group.schema'
 import { Token } from 'src/tokens/schemas/token.schema'
 import { User } from 'src/users/schemas/user.schema'
+import { News } from 'src/news/schemas/news.schema'
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -75,6 +77,7 @@ export class GroupsController {
 
         const newDto = {
             ...dto,
+            members: [user._id],
             studySpace: studySpaceId
         }
 
@@ -114,12 +117,27 @@ export class GroupsController {
     @ApiOperation({ summary: 'Получение всех участников группы через ID' })
     @ApiResponse({ status: 200, type: [User] })
     @Get('/:id/users')
-    async getUsers(@Param() params, @Request() req) {
+    async getUsers(@Param() params, @Request() req, @Query() query) {
         const { user } = req
         const { id } = params
         const studySpaceId = user.studySpace._id
 
-        const result = await this.groupsService.getUsers(id, studySpaceId)
+        const result = await this.groupsService.getUsers(id, studySpaceId, query)
+
+        return {
+            ...result
+        }
+    }
+
+    @ApiOperation({ summary: 'Получение новостей группы через ID' })
+    @ApiResponse({ status: 200, type: [News] })
+    @Get('/:id/news')
+    async getNews(@Param() params, @Request() req, @Query() query) {
+        const { user } = req
+        const { id } = params
+        const studySpaceId = user.studySpace._id
+
+        const result = await this.groupsService.getNews(id, studySpaceId, query)
 
         return {
             result

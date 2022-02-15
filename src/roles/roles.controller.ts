@@ -6,6 +6,9 @@ import {
     ApiTags 
 } from '@nestjs/swagger'
 
+// decorators
+import { Public } from 'src/auth/public.decorator'
+
 // dto
 import { CreateRoleDto } from './dto/create-role.dto'
 
@@ -30,8 +33,9 @@ export class RolesController {
         return this.rolesService.create(roleDto)
     }
 
-    @ApiOperation({ summary: 'Получение всех ролей (ДЕМО)' })
+    @ApiOperation({ summary: 'Получение всех ролей - Публичный' })
     @ApiResponse({ status: 200, type: [Role] })
+    @Public()
     @Get()
     async get() {
         return this.rolesService.getAll()

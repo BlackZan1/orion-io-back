@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { 
-    IsDate, 
+    IsDateString, 
     IsEmail, 
     IsJWT, 
     IsOptional, 
-    IsPhoneNumber, 
     IsString, 
     Length 
 } from 'class-validator'
@@ -35,17 +34,16 @@ export class CreateUserDto {
     readonly middleName?: string
 
     @ApiProperty({ example: '+996111111111', description: 'Тел. номер пользователя' })
-    @IsPhoneNumber()
+    @IsString()
     readonly phone?: string
 
     @ApiProperty({ example: '12312312123.png', description: 'Фото пользователя' })
     @IsOptional()
-    @IsString()
-    readonly photo?: string
+    readonly photo?: any
 
     @ApiProperty({ example: '2011-10-05T14:48:00.000Z', description: 'День рождения пользователя' })
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     readonly birthDay: string
 
     @ApiProperty({ example: '123123123', description: 'Пароль пользователя' })
@@ -64,32 +62,30 @@ export class CreateUserTokenDto {
 
     @ApiProperty({ example: 'Nazar', description: 'Имя пользователя' })
     @IsString()
-    @Length(1, 50)
+    @Length(1, 100)
     readonly firstName: string
 
     @ApiProperty({ example: 'Saaliev', description: 'Фамилия пользователя' })
     @IsString()
-    @Length(1, 50)
+    @Length(1, 100)
     readonly lastName: string
 
     @ApiProperty({ example: 'Anarilyevich', description: 'Отчество пользователя' })
     @IsOptional()
     @IsString()
-    @Length(1, 50)
     readonly middleName?: string
 
     @ApiProperty({ example: '+996111111111', description: 'Тел. номер пользователя' })
-    @IsPhoneNumber()
+    @IsString()
     readonly phone?: string
 
     @ApiProperty({ example: '12312312123.png', description: 'Фото пользователя' })
     @IsOptional()
-    @IsString()
-    readonly photo?: string
+    readonly photo?: any
 
     @ApiProperty({ example: '2011-10-05T14:48:00.000Z', description: 'День рождения пользователя' })
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     readonly birthDay: string
 
     @ApiProperty({ example: '123123123', description: 'Пароль пользователя' })
