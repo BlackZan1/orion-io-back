@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin'
-import 'firebase-admin/storage'
-import 'firebase/storage'
+// import 'firebase-admin/storage'
+// import 'firebase/storage'
 
 const credentialsJSON = require('../services.json')
 

@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true })
 
   const swagger = new DocumentBuilder()
-    .setTitle('IrionIO - Swagger')
+    .setTitle('OrionIO - Swagger')
     .setDescription('Docs and etc (Rest API)')
     .setVersion('v.1.0')
     .addBearerAuth()
