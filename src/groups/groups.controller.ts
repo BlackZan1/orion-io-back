@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Body, 
     Controller, 
+    Delete, 
     Get, 
     HttpCode, 
     Param, 
@@ -82,6 +83,19 @@ export class GroupsController {
         }
 
         return this.groupsService.create(user._id, newDto)
+    }
+
+    @ApiOperation({ summary: 'Удаление группы пользователя через ID' })
+    @ApiResponse({ status: 200, type: Group })
+    @Delete('/:id')
+    async delete(@Param() params, @Request() req) {
+        const { user: reqUser } = req
+        const { id } = params
+        const studySpaceId = reqUser.studySpace._id
+
+        if(!id.match(/^[0-9a-fA-F]{24}$/)) throw new BadRequestException('ID is not valid!')
+
+        return this.groupsService.delete(id, studySpaceId)
     }
 
     @ApiOperation({ summary: 'Добавление в группу пользователя через ID' })

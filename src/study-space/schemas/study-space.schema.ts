@@ -36,6 +36,14 @@ export class StudySpace {
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Group' }] })
     groups: Group[]
 
+    @ApiProperty({ example: '08:00', description: 'Начало рабочего дня' })
+    @Prop({ default: null })
+    startHour: string
+
+    @ApiProperty({ example: '16:00', description: 'Конец рабочего дня' })
+    @Prop({ default: null })
+    endHour: string
+
     @ApiProperty({ example: '123123123.png', description: 'Лого учебного пространства' })
     @Prop({ default: null })
     image: string

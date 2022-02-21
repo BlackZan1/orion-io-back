@@ -63,6 +63,16 @@ export class GroupsService {
         return group
     }
 
+    async delete(id: string, studySpaceId: any) {
+        const group = await this.getById(id, studySpaceId)
+
+        await group.deleteOne()
+
+        return {
+            success: true
+        }
+    }
+
     async addUser(id: string, userId: string, studySpaceId: any): Promise<GroupDocument> {
         const group = await this.getById(id, studySpaceId)
 
