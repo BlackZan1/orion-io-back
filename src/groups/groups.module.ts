@@ -16,6 +16,7 @@ import { GroupsController } from './groups.controller'
 
 // schemas
 import { Group, GroupSchema } from './schemas/group.schema'
+import { GroupLesson, GroupLessonSchema } from './schemas/groupLesson.schema'
 
 @Module({
   providers: [
@@ -31,7 +32,8 @@ import { Group, GroupSchema } from './schemas/group.schema'
     forwardRef(() => NewsModule),
     TokensModule,
     MongooseModule.forFeature([
-      { name: Group.name, schema: GroupSchema }
+      { name: Group.name, schema: GroupSchema },
+      { name: GroupLesson.name, schema: GroupLessonSchema }
     ])
   ],
   exports: [

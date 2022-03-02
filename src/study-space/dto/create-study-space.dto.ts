@@ -4,7 +4,7 @@ import { IsOptional, IsString, Length } from 'class-validator'
 export class CreateStudySpaceDto {
     @ApiProperty({ example: 'Harvard University', description: 'Название учебного пространства' })
     @IsString()
-    @Length(5, 50)
+    @Length(3, 50)
     readonly name: string
 
     @ApiProperty({ example: '10 из 10 - мы крутые!', description: 'Описание учебного пространства' })

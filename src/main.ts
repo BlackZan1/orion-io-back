@@ -23,6 +23,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/swagger', app, document)
 
   app.use(helmet())
+  app.enableCors()
 
   await app.listen(config().port)
 }

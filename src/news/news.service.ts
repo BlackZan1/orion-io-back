@@ -5,21 +5,21 @@ import { Model } from 'mongoose'
 // dto
 import { CreateNewsDto } from './dto/create-news.dto'
 
-// modules
-import { NewsModule } from './news.module'
-
 // schemas
-import { News } from './schemas/news.schema'
+import { News, NewsDocument } from './schemas/news.schema'
 
 @Injectable()
 export class NewsService {
     constructor(
-        @InjectModel(News.name) private newsModel: Model<NewsModule>
+        @InjectModel(News.name) private newsModel: Model<NewsDocument>
     ) {}
 
-    async getById(id: string) {
+    async getById(id: string, groupId: any) {
         const news = await this.newsModel
-            .findById(id)
+            .findOne({
+                _id: id,
+                group: groupId
+            })
             .populate({ path: 'author', populate: 'role' })
 
         if(!news) throw new BadRequestException('News object is not found!')
@@ -28,9 +28,7 @@ export class NewsService {
     }
 
     async create(dto: CreateNewsDto) {
-        const news = await new this.newsModel(dto).save()
-
-        return this.getById(news.id)
+        return new this.newsModel(dto).save()
     }
 
     async getAll(groupId: any, params: { page?: number, limit?: number }) {
@@ -43,5 +41,23 @@ export class NewsService {
             .populate({ path: 'author', populate: 'role' })
             .limit(limit)
             .skip((page * limit) - limit)
+    }
+
+    async update(id: string, groupId: any, dto: any) {
+        const news = await this.getById(id, groupId)
+
+        await news.updateOne(dto)
+
+        return this.getById(id, groupId)
+    }
+
+    async delete(id: string, groupId: any) {
+        const news = await this.getById(id, groupId)
+
+        await news.remove()
+
+        return {
+            success: true
+        }
     }
 }

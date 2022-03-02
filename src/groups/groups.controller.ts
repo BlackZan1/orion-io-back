@@ -6,6 +6,7 @@ import {
     Get, 
     HttpCode, 
     Param, 
+    Patch, 
     Post, 
     Query, 
     Request,
@@ -30,6 +31,7 @@ import { RoleEnum } from 'src/roles/roles.enum'
 // dto
 import { CreateGroupDto } from './dto/create-group.dto'
 import { AddUserDto } from './dto/add-user.dto'
+import { CreateGroupLessonDto } from './dto/create-group-lesson.dto'
 
 // services
 import { GroupsService } from './groups.service'
@@ -40,6 +42,7 @@ import { Group } from './schemas/group.schema'
 import { Token } from 'src/tokens/schemas/token.schema'
 import { User } from 'src/users/schemas/user.schema'
 import { News } from 'src/news/schemas/news.schema'
+import { GroupLesson } from './schemas/groupLesson.schema'
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -156,5 +159,69 @@ export class GroupsController {
         return {
             result
         }
+    }
+
+    @ApiOperation({ summary: 'Редактирование новости группы через ID' })
+    @ApiResponse({ status: 200, type: News })
+    @Patch('/:id/news/:newsId')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async updateNews(@Param() params, @Request() req, @Body() dto: any) {
+        const { user } = req
+        const { id, newsId } = params
+        const studySpaceId = user.studySpace._id
+
+        return this.groupsService.updateNews(id, studySpaceId, newsId, dto)
+    }
+
+    @ApiOperation({ summary: 'Удаление новости группы через ID' })
+    @ApiResponse({ status: 200, type: News })
+    @Delete('/:id/news/:newsId')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async deleteNews(@Param() params, @Request() req) {
+        const { user } = req
+        const { id, newsId } = params
+        const studySpaceId = user.studySpace._id
+
+        return this.groupsService.deleteNews(id, studySpaceId, newsId)
+    }
+
+    @ApiOperation({ summary: 'Получение всех дисциплин группы через ID' })
+    @ApiResponse({ status: 200, type: GroupLesson })
+    @Get('/:id/lessons')
+    async getLessons(@Param() params, @Request() req) {
+        const { user } = req
+        const { id } = params
+        const studySpaceId = user.studySpace._id
+
+        return this.groupsService.getLessons(id, studySpaceId)
+    }
+
+    @ApiOperation({ summary: 'Добавление дисциплины группы через ID' })
+    @ApiResponse({ status: 201, type: GroupLesson })
+    @Post('/:id/lessons')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    @HttpCode(201)
+    async createLesson(@Param() params, @Request() req, @Body() dto: CreateGroupLessonDto) {
+        const { user } = req
+        const { id } = params
+        const studySpaceId = user.studySpace._id
+
+        return this.groupsService.createLesson(id, studySpaceId, dto)
+    }
+
+    @ApiOperation({ summary: 'Удаление дисциплины группы через ID' })
+    @ApiResponse({ status: 200, type: GroupLesson })
+    @Delete('/:id/lessons/:lessonId')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async deleteLesson(@Param() params, @Request() req) {
+        const { user } = req
+        const { id, lessonId } = params
+        const studySpaceId = user.studySpace._id
+
+        return this.groupsService.deleteLesson(id, studySpaceId, lessonId)
     }
 }

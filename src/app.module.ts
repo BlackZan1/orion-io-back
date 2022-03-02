@@ -20,6 +20,10 @@ import { StudySpaceModule } from './study-space/study-space.module'
 import { SchedulesModule } from './schedules/schedules.module'
 import { EventsModule } from './events/events.module'
 import { FilesModule } from './files/files.module'
+import { TokensModule } from './tokens/tokens.module'
+import { NewsModule } from './news/news.module'
+import { LessonsModule } from './lessons/lessons.module'
+import { AuditoriesModule } from './auditories/auditories.module'
 
 // utils
 import config from 'config/configuration'
@@ -31,8 +35,6 @@ import { JwtAuthGuard } from './auth/guards/jwt.guard'
 
 // pipes
 import { ValidationPipe } from './pipes/validation.pipe'
-import { TokensModule } from './tokens/tokens.module';
-import { NewsModule } from './news/news.module';
 
 @Module({
   imports: [
@@ -53,7 +55,9 @@ import { NewsModule } from './news/news.module';
     EventsModule,
     FilesModule,
     TokensModule,
-    NewsModule
+    NewsModule,
+    LessonsModule,
+    AuditoriesModule
   ],
   controllers: [
     AppController

@@ -10,6 +10,7 @@ import { FilesService } from 'src/files/files.service'
 
 // dto
 import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 
 // schema
 import { User, UserDocument } from './schemas/user.schema'
@@ -115,6 +116,14 @@ export class UsersService {
 
         await this.userModel
             .findByIdAndUpdate(id, { photo: uploadedFile.filename })
+
+        return {
+            success: true
+        }
+    }
+
+    async update(id: string, dto: UpdateUserDto) {
+        await this.userModel.findByIdAndUpdate(id, dto)
 
         return {
             success: true

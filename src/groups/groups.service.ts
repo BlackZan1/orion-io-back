@@ -10,15 +10,18 @@ import { NewsService } from 'src/news/news.service'
 
 // dto
 import { CreateGroupDto } from './dto/create-group.dto'
+import { CreateGroupLessonDto } from './dto/create-group-lesson.dto'
 
 // schemas
 import { Group, GroupDocument } from './schemas/group.schema'
 import { TokenDocument } from 'src/tokens/schemas/token.schema'
+import { GroupLesson, GroupLessonDocument } from './schemas/groupLesson.schema'
 
 @Injectable()
 export class GroupsService {
     constructor(
         @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
+        @InjectModel(GroupLesson.name) private groupLessonModel: Model<GroupLessonDocument>,
         private studySpaceService: StudySpaceService,
         private schedulesService: SchedulesService,
         private tokensService: TokensService,
@@ -61,6 +64,19 @@ export class GroupsService {
         if(!group) throw new BadRequestException('Group is not found!')
 
         return group
+    }
+
+    async getLessonById(id: string, groupId: any): Promise<GroupLessonDocument> {
+        const lesson = await this.groupLessonModel
+            .findOne({
+                _id: id,
+                group: groupId
+            })
+            .populate('lesson')
+
+        if(!lesson) throw new BadRequestException('Group lesson is not found!')
+        
+        return lesson
     }
 
     async delete(id: string, studySpaceId: any) {
@@ -124,5 +140,44 @@ export class GroupsService {
         const group = await this.getById(id, studySpaceId)
         
         return this.newsService.getAll(group._id, query)
+    }
+
+    async updateNews(id: string, studySpaceId: any, newsId: string, dto: any) {
+        const group = await this.getById(id, studySpaceId)
+
+        return this.newsService.update(newsId, group._id, dto)
+    }
+
+    async deleteNews(id: string, studySpaceId: any, newsId: string) {
+        const group = await this.getById(id, studySpaceId)
+
+        return this.newsService.delete(newsId, group._id)
+    }
+
+    async getLessons(id: string, studySpaceId: any) {
+        const group = await this.getById(id, studySpaceId)
+
+        return this.groupLessonModel
+            .find({
+                group: group._id
+            })
+            .limit(100)
+    }
+
+    async createLesson(id: string, studySpaceId: any, dto: CreateGroupLessonDto) {
+        const group = await this.getById(id, studySpaceId)
+
+        return new this.groupLessonModel({ ...dto, group: group._id }).save()
+    }
+
+    async deleteLesson(id: string,studySpaceId: any, lessonId: string) {
+        const group = await this.getById(id, studySpaceId)
+        const lesson = await this.getLessonById(lessonId, group._id)
+
+        await lesson.remove()
+
+        return {
+            success: true
+        }
     }
 }

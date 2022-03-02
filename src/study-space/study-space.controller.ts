@@ -46,16 +46,6 @@ export class StudySpaceController {
         private filesService: FilesService
     ) {}
 
-    // @ApiOperation({ summary: 'Получение учебного пространства' })
-    // @ApiResponse({ status: 200, type: StudySpace })
-    // @Get()
-    // async get(@Request() req) {
-    //     const { user } = req
-    //     const studySpaceId = user.studySpace._id
-
-    //     return this.studySpaceService.getById(studySpaceId, user._id)
-    // }
-
     @ApiOperation({ summary: 'Создание учебного пространства' })
     @ApiResponse({ status: 201, type: StudySpace })
     @Post()
@@ -92,31 +82,5 @@ export class StudySpaceController {
         }
 
         return this.studySpaceService.addUser(studySpaceId, user._id, newDto)
-    }
-
-    @ApiOperation({ summary: 'Добавление пользователя в учебном пространстве через ID (DEMO)' })
-    @ApiResponse({ status: 200, type: StudySpace })
-    @Post('/demo/add-user/:id') 
-    @Roles(RoleEnum.Admin)
-    @UseGuards(RolesGuard)
-    async addUser(@Request() req, @Param() params) {
-        const { id } = params
-        const { user } = req
-        const studySpaceId = user.studySpace._id
-
-        return this.studySpaceService.addUserById(studySpaceId, user._id, id)
-    }
-
-    @ApiOperation({ summary: 'Добавление группы в учебном пространстве через ID (DEMO)' })
-    @ApiResponse({ status: 200, type: StudySpace })
-    @Post('/demo/add-group/:id') 
-    @Roles(RoleEnum.Admin)
-    @UseGuards(RolesGuard)
-    async addGroup(@Request() req, @Param() params) {
-        const { id } = params
-        const { user } = req
-        const studySpaceId = user.studySpace._id
-
-        return this.studySpaceService.addGroupById(studySpaceId, user._id, id)
     }
 }

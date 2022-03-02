@@ -3,9 +3,10 @@ import {
     Controller, 
     Get, 
     Param, 
-    Post, 
+    Patch, 
     Request, 
-    UseGuards 
+    UploadedFile, 
+    UseInterceptors
 } from '@nestjs/common'
 import { 
     ApiBearerAuth, 
@@ -13,37 +14,29 @@ import {
     ApiResponse, 
     ApiTags 
 } from '@nestjs/swagger'
-import { RolesGuard } from 'src/roles/guards/roles.guard'
-import { Roles } from 'src/roles/roles.decorator'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 // schemas
 import { User } from './schemas/user.schema'
 
-// enum
-import { RoleEnum } from 'src/roles/roles.enum'
-
 // dto
-import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 
 // services
 import { UsersService } from './users.service'
+import { FilesService } from 'src/files/files.service'
+
+// utils
+import { MulterFile } from 'utils/multer-storage'
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('/api/users')
 export class UsersController {
-    constructor(private usersService: UsersService) {}
-
-    @ApiOperation({ summary: 'Получение всех пользователей (ДЕМО)' })
-    @ApiResponse({ status: 200, type: [User] })
-    @Get()
-    async get() {
-        const results = await this.usersService.getAll()
-
-        return {
-            results
-        }
-    }
+    constructor(
+        private usersService: UsersService,
+        private filesService: FilesService
+    ) {}
 
     @ApiOperation({ summary: 'Получение пользователя по ID' })
     @ApiResponse({ status: 200, type: User })
@@ -55,21 +48,19 @@ export class UsersController {
         return this.usersService.getById(id, studySpaceId)
     }
 
-    @ApiOperation({ summary: 'Создание пользователя (ДЕМО)' })
-    @ApiResponse({ status: 201, type: User })
-    @Post()
-    @Roles(RoleEnum.Admin)
-    @UseGuards(RolesGuard)
-    create(@Body() userDto: CreateUserDto) {
-        return this.usersService.createUser(userDto)
-    }
+    @ApiOperation({ summary: 'Редактирование своего пользователя' })
+    @ApiResponse({ status: 200, type: User })
+    @Patch()
+    @UseInterceptors(FileInterceptor('photo'))
+    async update(@Body() dto: UpdateUserDto, @Request() req, @UploadedFile() file: MulterFile) {
+        const { user } = req
 
-    @ApiOperation({ summary: 'Создание пользователя-админа (ДЕМО)' })
-    @ApiResponse({ status: 201, type: User })
-    @Post('admin')
-    @Roles(RoleEnum.Admin)
-    @UseGuards(RolesGuard)
-    createAdmin(@Body() userDto: CreateUserDto) {
-        return this.usersService.createAdmin(userDto)
+        if(file) {
+            const photo = await this.filesService.uploadFile(file)
+
+            dto.photo = photo.filename as any
+        }
+
+        return this.usersService.update(user.id, dto)
     }
 }
