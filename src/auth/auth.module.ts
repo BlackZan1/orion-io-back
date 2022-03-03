@@ -46,7 +46,7 @@ import { multerStorage } from 'utils/multer-storage'
         JwtModule.register({
             secret: config().jwtSecret,
             signOptions: {
-                expiresIn: '1d'
+                expiresIn: '1y'
             }
         })
     ],

@@ -21,7 +21,7 @@ export class Lesson {
     name: string
 
     @ApiProperty({ example: 'Много практики!', description: 'Описание дисциплины' })
-    @Prop({ required: true })
+    @Prop({ default: null })
     details: string
 
     @ApiProperty({ example: '#000000', description: 'Цвет отображения дисциплины' })
