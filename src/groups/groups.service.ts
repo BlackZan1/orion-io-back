@@ -16,6 +16,7 @@ import { CreateGroupLessonDto } from './dto/create-group-lesson.dto'
 import { Group, GroupDocument } from './schemas/group.schema'
 import { TokenDocument } from 'src/tokens/schemas/token.schema'
 import { GroupLesson, GroupLessonDocument } from './schemas/groupLesson.schema'
+import { NewsDocument } from 'src/news/schemas/news.schema'
 
 @Injectable()
 export class GroupsService {
@@ -136,13 +137,13 @@ export class GroupsService {
         }
     }
 
-    async getNews(id: string, studySpaceId: any, query: any) {
+    async getNews(id: string, studySpaceId: any, query: any): Promise<NewsDocument[]> {
         const group = await this.getById(id, studySpaceId)
         
         return this.newsService.getAll(group._id, query)
     }
 
-    async updateNews(id: string, studySpaceId: any, newsId: string, dto: any) {
+    async updateNews(id: string, studySpaceId: any, newsId: string, dto: any): Promise<NewsDocument> {
         const group = await this.getById(id, studySpaceId)
 
         return this.newsService.update(newsId, group._id, dto)
@@ -154,20 +155,42 @@ export class GroupsService {
         return this.newsService.delete(newsId, group._id)
     }
 
-    async getLessons(id: string, studySpaceId: any) {
+    async getLessons(id: string, studySpaceId: any, q: string): Promise<GroupLessonDocument[]>  {
         const group = await this.getById(id, studySpaceId)
+
+        let modelProps: any = {
+            group: group._id
+        }
+
+        if(q) {
+            modelProps = {
+                group: group._id,
+                'lesson.name': {
+                    $regex: q,
+                    $options: 'i'
+                }
+            }
+        }
 
         return this.groupLessonModel
             .find({
-                group: group._id
+                modelProps
             })
+            .populate('lesson')
             .limit(100)
     }
 
-    async createLesson(id: string, studySpaceId: any, dto: CreateGroupLessonDto) {
+    async createLesson(id: string, studySpaceId: any, dto: CreateGroupLessonDto): Promise<GroupLessonDocument> {
         const group = await this.getById(id, studySpaceId)
 
-        return new this.groupLessonModel({ ...dto, group: group._id }).save()
+        const groupLesson = await new this.groupLessonModel({ ...dto, group: group._id }).save()
+
+        return this.groupLessonModel
+            .findOne({
+                group: group._id,
+                _id: groupLesson._id
+            })
+            .populate('lesson')
     }
 
     async deleteLesson(id: string,studySpaceId: any, lessonId: string) {

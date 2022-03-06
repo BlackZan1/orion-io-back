@@ -190,12 +190,17 @@ export class GroupsController {
     @ApiOperation({ summary: 'Получение всех дисциплин группы через ID' })
     @ApiResponse({ status: 200, type: GroupLesson })
     @Get('/:id/lessons')
-    async getLessons(@Param() params, @Request() req) {
+    async getLessons(@Param() params, @Request() req, @Query() query) {
+        const { q } = query
         const { user } = req
         const { id } = params
         const studySpaceId = user.studySpace._id
 
-        return this.groupsService.getLessons(id, studySpaceId)
+        const result = await this.groupsService.getLessons(id, studySpaceId, q)
+
+        return {
+            result
+        }
     }
 
     @ApiOperation({ summary: 'Добавление дисциплины группы через ID' })

@@ -28,7 +28,7 @@ import config from 'config/configuration'
     JwtModule.register({
       secret: config().regTokenSecret,
       signOptions: {
-        expiresIn: '1d'
+        expiresIn: '30d'
       }
     })
   ],
