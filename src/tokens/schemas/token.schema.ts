@@ -16,7 +16,7 @@ export class Token {
     @Prop({ required: true, type: Types.ObjectId, ref: StudySpace.name })
     studySpace: StudySpace
 
-    @Prop({ required: true, type: Types.ObjectId, ref: Group.name })
+    @Prop({ default: null, type: Types.ObjectId, ref: Group.name })
     group: Group
 
     @Prop({ default: null })

@@ -54,9 +54,13 @@ export class AuditoriesService {
             }
         }
 
+        const count = await this.auditoryModel
+            .find(modelProps)
+            .count()
+
         return this.auditoryModel
             .find(modelProps)
-            .limit(100)
+            .limit(count)
     }
 
     async delete(id: string, studySpaceId: any) {

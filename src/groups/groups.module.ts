@@ -7,6 +7,7 @@ import { UsersModule } from 'src/users/users.module'
 import { SchedulesModule } from 'src/schedules/schedules.module'
 import { NewsModule } from 'src/news/news.module'
 import { TokensModule } from 'src/tokens/tokens.module'
+import { LessonsModule } from 'src/lessons/lessons.module'
 
 // services
 import { GroupsService } from './groups.service'
@@ -31,6 +32,7 @@ import { GroupLesson, GroupLessonSchema } from './schemas/groupLesson.schema'
     SchedulesModule,
     forwardRef(() => NewsModule),
     TokensModule,
+    LessonsModule,
     MongooseModule.forFeature([
       { name: Group.name, schema: GroupSchema },
       { name: GroupLesson.name, schema: GroupLessonSchema }

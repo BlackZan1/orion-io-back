@@ -69,6 +69,10 @@ export class User {
     @ApiProperty({ example: false, description: 'Статус полной регистрации пользователя' })
     @Prop({ default: false })
     isNew: boolean
+
+    @ApiProperty({ example: false, description: 'Пользователь учитель или нет' })
+    @Prop({ default: false })
+    isTeacher: boolean
 }
 
 export type UserDocument = User & Document

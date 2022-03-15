@@ -54,9 +54,13 @@ export class LessonsService {
             }
         }
 
+        const count = await this.lessonsModel
+            .find(modelProps)
+            .count()
+
         return this.lessonsModel
             .find(modelProps)
-            .limit(100)
+            .limit(count)
     }
 
     async delete(id: string, studySpaceId: any) {

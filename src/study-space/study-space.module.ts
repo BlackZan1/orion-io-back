@@ -5,6 +5,7 @@ import { MulterModule } from '@nestjs/platform-express'
 // modules
 import { UsersModule } from 'src/users/users.module'
 import { FilesModule } from 'src/files/files.module'
+import { TokensModule } from 'src/tokens/tokens.module'
 
 // schema
 import { StudySpace, StudySpaceSchema } from './schemas/study-space.schema'
@@ -31,6 +32,7 @@ import { multerStorage } from 'utils/multer-storage'
         ]),
         UsersModule,
         FilesModule,
+        TokensModule,
         MulterModule.register({
             storage: multerStorage
         })

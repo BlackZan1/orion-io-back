@@ -17,7 +17,7 @@ export class TokensService {
     ) {}
 
     async generate(studySpaceId: string, groupId: any, action: TokenActions): Promise<TokenDocument> {
-        let forRole: 'admin' | 'superUser' | 'user'
+        let forRole: 'admin' | 'superUser' | 'user' | 'teacher'
 
         switch(action) {
             case TokenActions.createAdmin:
@@ -26,6 +26,10 @@ export class TokensService {
                 break
             case TokenActions.createSuperUser:
                 forRole = 'superUser'
+
+                break
+            case TokenActions.createTeacher:
+                forRole = 'teacher'
 
                 break
             case TokenActions.createUser:
@@ -70,12 +74,32 @@ export class TokensService {
 
     async delete(token: string) {
         return this.tokenModel
-            .findOneAndDelete({ token})
+            .findOneAndDelete({ token })
     }
 
     async getAllByGroupId(groupId: any): Promise<TokenDocument[]> {
         return this.tokenModel
             .find({ group: groupId })
+            .select('-_id')
+    }
+
+    async getTeachers(studySpaceId: any) {
+        return this.tokenModel
+            .find({ 
+                studySpace: studySpaceId,
+                group: null,
+                forRole: 'teacher'
+            })
+            .select('-_id')
+    }
+
+    async getModerators(studySpaceId: any) {
+        return this.tokenModel
+            .find({ 
+                studySpace: studySpaceId,
+                group: null,
+                forRole: 'admin'
+            })
             .select('-_id')
     }
 }

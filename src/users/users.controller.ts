@@ -4,6 +4,7 @@ import {
     Get, 
     Param, 
     Patch, 
+    Query, 
     Request, 
     UploadedFile, 
     UseInterceptors
@@ -37,6 +38,19 @@ export class UsersController {
         private usersService: UsersService,
         private filesService: FilesService
     ) {}
+
+    @ApiOperation({ summary: 'Получение всех пользователей вашей системы' })
+    @ApiResponse({ status: 200, type: [User] })
+    @Get()
+    async getAll(@Request() req, @Query() query) {
+        const studySpaceId = req.user.studySpace._id
+
+        const result = await this.usersService.getAll(studySpaceId, query)
+
+        return {
+            result
+        }
+    }
 
     @ApiOperation({ summary: 'Получение пользователя по ID' })
     @ApiResponse({ status: 200, type: User })

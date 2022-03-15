@@ -85,6 +85,7 @@ export class AuthController {
         }
 
         let user: UserDocument
+        let isModerator = false
 
         switch(token.action) {
             case TokenActions.createUser:
@@ -97,13 +98,24 @@ export class AuthController {
                 break
             case TokenActions.createAdmin:
                 user = await this.usersService.createAdmin(newDto)
+                isModerator = true
+                
+                break
+            case TokenActions.createTeacher:
+                user = await this.usersService.createTeacher(newDto)
 
                 break
             default:
                 break
         }
         
-        await this.groupsService.addUser(token.groupId, user.id, user.studySpace)
+        if(token.groupId) {
+            await this.groupsService.addUser(token.groupId, user.id, user.studySpace)
+        }
+        else if(isModerator) {
+            await this.groupsService.addSuperUser(user.id, user.studySpace)
+        }
+
         await this.tokensService.delete(dto.token)
 
         return user

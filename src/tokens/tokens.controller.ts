@@ -61,11 +61,11 @@ export class TokensController {
     @Roles(RoleEnum.Admin)
     @UseGuards(RolesGuard)
     @HttpCode(201)
-    generateAdmin(@Request() req, @Body() dto: CreateTokenDto) {
+    generateAdmin(@Request() req) {
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        return this.tokensService.generate(studySpaceId, dto.groupId, TokenActions.createAdmin)
+        return this.tokensService.generate(studySpaceId, null, TokenActions.createAdmin)
     }
 
     @ApiOperation({ summary: 'Генерация токена модератора для ссылки'  })
@@ -79,6 +79,19 @@ export class TokensController {
         const studySpaceId = user.studySpace._id
 
         return this.tokensService.generate(studySpaceId, dto.groupId, TokenActions.createSuperUser)
+    }
+
+    @ApiOperation({ summary: 'Генерация токена преподавателя для ссылки'  })
+    @ApiResponse({ status: 201, type: CreateTokenDto })
+    @Post('generate-teacher')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    @HttpCode(201)
+    generateTeacher(@Request() req) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        return this.tokensService.generate(studySpaceId, null, TokenActions.createTeacher)
     }
 
     @ApiOperation({ summary: 'Удаление токена'  })

@@ -4,6 +4,7 @@ import {
     Get, 
     Param, 
     Post, 
+    Query, 
     Request, 
     UploadedFile, 
     UseGuards, 
@@ -33,9 +34,13 @@ import { CreateStudySpaceDto } from './dto/create-study-space.dto'
 // services
 import { StudySpaceService } from './study-space.service'
 import { FilesService } from 'src/files/files.service'
+import { TokensService } from 'src/tokens/tokens.service'
+import { UsersService } from 'src/users/users.service'
 
 // schemas
 import { StudySpace } from './schemas/study-space.schema'
+import { Token } from 'src/tokens/schemas/token.schema'
+import { User } from 'src/users/schemas/user.schema'
 
 @ApiTags('Study space (Учебное пространство - основная платформа)')
 @ApiBearerAuth()
@@ -43,7 +48,9 @@ import { StudySpace } from './schemas/study-space.schema'
 export class StudySpaceController {
     constructor(
         private studySpaceService: StudySpaceService,
-        private filesService: FilesService
+        private filesService: FilesService,
+        private tokensService: TokensService,
+        private usersService: UsersService
     ) {}
 
     @ApiOperation({ summary: 'Создание учебного пространства' })
@@ -82,5 +89,61 @@ export class StudySpaceController {
         }
 
         return this.studySpaceService.addUser(studySpaceId, user._id, newDto)
+    }
+
+    @ApiOperation({ summary: 'Получение токенов для модераторов' })
+    @ApiResponse({ status: 200, type: [Token] })
+    @Get('/tokens-admin')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async getModeratorsTokens(@Request() req) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        const result = await this.tokensService.getModerators(studySpaceId)
+
+        return {
+            result
+        }
+    }
+
+    @ApiOperation({ summary: 'Получение токенов для преподавателей' })
+    @ApiResponse({ status: 200, type: [Token] })
+    @Get('/tokens-teachers')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async getTeachersTokens(@Request() req) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        const result = await this.tokensService.getTeachers(studySpaceId)
+
+        return {
+            result
+        }
+    }
+
+    @ApiOperation({ summary: 'Получение всех преподавателей' })
+    @ApiResponse({ status: 200, type: [User] })
+    @Get('/teachers')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async getTeachers(@Request() req, @Query() query) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        return this.usersService.getTeachers(studySpaceId, query)
+    }
+
+    @ApiOperation({ summary: 'Получение всех методистов' })
+    @ApiResponse({ status: 200, type: [User] })
+    @Get('/admins')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async getAdmins(@Request() req, @Query() query) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        return this.usersService.getAdmins(studySpaceId, query)
     }
 }

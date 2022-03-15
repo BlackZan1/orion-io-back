@@ -78,10 +78,12 @@ export class GroupsController {
     async create(@Body() dto: CreateGroupDto, @Request() req) {
         const { user } = req
         const studySpaceId = user.studySpace._id
+        
+        const admins = await this.usersService.getAllAdmins(studySpaceId)
 
         const newDto = {
             ...dto,
-            members: [user._id],
+            members: admins.map((admin) => admin._id),
             studySpace: studySpaceId
         }
 

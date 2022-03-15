@@ -7,6 +7,7 @@ import { StudySpaceService } from 'src/study-space/study-space.service'
 import { SchedulesService } from 'src/schedules/schedules.service'
 import { TokensService } from 'src/tokens/tokens.service'
 import { NewsService } from 'src/news/news.service'
+import { LessonsService } from 'src/lessons/lessons.service'
 
 // dto
 import { CreateGroupDto } from './dto/create-group.dto'
@@ -26,7 +27,8 @@ export class GroupsService {
         private studySpaceService: StudySpaceService,
         private schedulesService: SchedulesService,
         private tokensService: TokensService,
-        private newsService: NewsService
+        private newsService: NewsService,
+        private lessonsService: LessonsService
     ) {}
 
     async create(userId: any, dto: CreateGroupDto): Promise<GroupDocument> {
@@ -102,6 +104,14 @@ export class GroupsService {
         return this.getById(id, studySpaceId)
     }
 
+    async addSuperUser(userId: string, studySpaceId: any) {
+        return this.groupModel
+            .find({ studySpace: studySpaceId })
+            .update({ $push: { members: userId } })
+            .populate('members')
+            .populate('schedule')
+    }
+
     async addSchedule(id: string, scheduleId: any, studySpaceId: any): Promise<GroupDocument> {
         const group = await this.getById(id, studySpaceId)
 
@@ -164,26 +174,34 @@ export class GroupsService {
 
         if(q) {
             modelProps = {
-                group: group._id,
-                'lesson.name': {
+                ...modelProps,
+                name: {
                     $regex: q,
                     $options: 'i'
                 }
             }
         }
 
+        const count = await this.groupLessonModel
+            .find(modelProps)
+            .count()
+
         return this.groupLessonModel
-            .find({
-                modelProps
-            })
+            .find(modelProps)
             .populate('lesson')
-            .limit(100)
+            .populate('lector')
+            .limit(count)
     }
 
     async createLesson(id: string, studySpaceId: any, dto: CreateGroupLessonDto): Promise<GroupLessonDocument> {
         const group = await this.getById(id, studySpaceId)
+        const lesson = await this.lessonsService.getById(dto.lesson, studySpaceId)
 
-        const groupLesson = await new this.groupLessonModel({ ...dto, group: group._id }).save()
+        const groupLesson = await new this.groupLessonModel({ 
+            ...dto,  
+            group: group._id,
+            name: lesson.name
+        }).save()
 
         return this.groupLessonModel
             .findOne({
@@ -191,6 +209,7 @@ export class GroupsService {
                 _id: groupLesson._id
             })
             .populate('lesson')
+            .populate('lector')
     }
 
     async deleteLesson(id: string,studySpaceId: any, lessonId: string) {

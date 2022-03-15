@@ -3,8 +3,6 @@ import { Document, Types } from 'mongoose'
 
 // schemas
 import { User } from 'src/users/schemas/user.schema'
-import { StudySpace } from 'src/study-space/schemas/study-space.schema'
-import { Schedule } from 'src/schedules/schemas/schedules.schema'
 import { Group } from './group.schema'
 import { Lesson } from 'src/lessons/schemas/lesson.schema'
 
@@ -19,11 +17,14 @@ import { Lesson } from 'src/lessons/schemas/lesson.schema'
     }
 })
 export class GroupLesson {
+    @Prop({ required: true })
+    name: string
+
     @Prop({ required: true, type: Types.ObjectId, ref: 'Lesson' })
     lesson: Lesson
     
-    @Prop({ required: true })
-    lector: string
+    @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
+    lector: User
 
     @Prop({ required: true, type: Types.ObjectId, ref: 'Group' })
     group: Group
