@@ -8,7 +8,9 @@ import { AppModule } from 'src/app.module'
 // utils
 import config from 'config/configuration'
 
-const whiteList = ['http://localhost:3000', 'https://orion-io.web.app', 'http://airi-studio.xyz']
+const whiteList = [
+  'http://localhost:3000', 'https://orion-io.web.app', 'http://airi-studio.xyz', 'http://orion.airi-studio.com', 'http://airi-studio.com'
+]
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)

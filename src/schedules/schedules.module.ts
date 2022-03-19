@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 
 // schemas
 import { Schedule, ScheduleSchema } from './schemas/schedules.schema'
+import { GroupLesson, GroupLessonSchema } from 'src/groups/schemas/groupLesson.schema'
 
 // services
 import { SchedulesService } from './schedules.service'
@@ -17,7 +18,8 @@ import { EventsModule } from 'src/events/events.module'
     imports: [
         EventsModule,
         MongooseModule.forFeature([
-            { name: Schedule.name, schema: ScheduleSchema }
+            { name: Schedule.name, schema: ScheduleSchema },
+            { name: GroupLesson.name, schema: GroupLessonSchema },
         ])
     ],
     providers: [

@@ -69,19 +69,6 @@ export class GroupsService {
         return group
     }
 
-    async getLessonById(id: string, groupId: any): Promise<GroupLessonDocument> {
-        const lesson = await this.groupLessonModel
-            .findOne({
-                _id: id,
-                group: groupId
-            })
-            .populate('lesson')
-
-        if(!lesson) throw new BadRequestException('Group lesson is not found!')
-        
-        return lesson
-    }
-
     async delete(id: string, studySpaceId: any) {
         const group = await this.getById(id, studySpaceId)
 
@@ -163,6 +150,19 @@ export class GroupsService {
         const group = await this.getById(id, studySpaceId)
 
         return this.newsService.delete(newsId, group._id)
+    }
+
+    async getLessonById(id: string, groupId: any): Promise<GroupLessonDocument> {
+        const lesson = await this.groupLessonModel
+            .findOne({
+                _id: id,
+                group: groupId
+            })
+            .populate('lesson')
+
+        if(!lesson) throw new BadRequestException('Group lesson is not found!')
+        
+        return lesson
     }
 
     async getLessons(id: string, studySpaceId: any, q: string): Promise<GroupLessonDocument[]>  {

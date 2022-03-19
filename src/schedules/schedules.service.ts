@@ -1,23 +1,26 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { CreateEventDto } from 'src/events/dto/create-event.dto'
 
 // services
 import { EventsService } from 'src/events/events.service'
+import { GroupsService } from 'src/groups/groups.service'
 
 // dto
 import { CreateScheduleDto } from './dto/create-schedule.dto'
+import { UpdateEventDto } from 'src/events/dto/update-event.dto'
 
 // schemas
 import { Schedule, ScheduleDocument } from './schemas/schedules.schema'
 import { EventDocument } from 'src/events/schemas/event.schema'
-import { UpdateEventDto } from 'src/events/dto/update-event.dto'
+import { GroupLesson, GroupLessonDocument } from 'src/groups/schemas/groupLesson.schema'
 
 @Injectable()
 export class SchedulesService {
     constructor(
         @InjectModel(Schedule.name) private scheduleModel: Model<ScheduleDocument>,
+        @InjectModel(GroupLesson.name) private groupLessonModel: Model<GroupLessonDocument>,
         private eventsService: EventsService
     ) {}
 
@@ -28,14 +31,14 @@ export class SchedulesService {
     async getById(id: string, studySpaceId: any): Promise<ScheduleDocument> {
         const schedule = await this.scheduleModel
             .findById(id)
-            .populate('monday')
-            .populate('tuesday')
-            .populate('wednesday')
-            .populate('thursday')
-            .populate('friday')
-            .populate('saturday')
-            .populate('sunday')
-
+            .populate({ path: 'monday', populate: { path: 'lesson', populate: 'lesson' } })
+            .populate({ path: 'tuesday', populate: { path: 'lesson', populate: 'lesson' } })
+            .populate({ path: 'wednesday', populate: { path: 'lesson', populate: 'lesson' } })
+            .populate({ path: 'thursday', populate: { path: 'lesson', populate: 'lesson' } })
+            .populate({ path: 'friday', populate: { path: 'lesson', populate: 'lesson' } })
+            .populate({ path: 'saturday', populate: { path: 'lesson', populate: 'lesson' } })
+            .populate({ path: 'sunday', populate: { path: 'lesson', populate: 'lesson' } })
+        
         if(!schedule) throw new BadRequestException('Schedule is not found!')
         if(schedule.group.studySpace === studySpaceId) throw new BadRequestException('Can not access to schedule!')
     
@@ -44,7 +47,11 @@ export class SchedulesService {
 
     async addEvent(id: string, studySpaceId: string, dto: CreateEventDto): Promise<EventDocument> {
         const schedule = await this.getById(id, studySpaceId)
-        const event = await this.eventsService.create({ ...dto, schedule: schedule._id })
+        const event = await this.eventsService.create({ 
+            ...dto, 
+            schedule: schedule._id,
+            lesson: new Types.ObjectId(dto.lesson)
+        })
 
         switch(parseFloat(dto.day + '')) {
             case 1:

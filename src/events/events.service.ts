@@ -16,7 +16,9 @@ export class EventsService {
     ) {}
 
     async create(dto: CreateEventDto): Promise<EventDocument> {
-        return new this.eventModel(dto).save()
+        const event = await new this.eventModel(dto).save()
+        
+        return this.getById(event._id, dto.schedule)
     }
 
     async getById(id: string, scheduleId: any): Promise<EventDocument> {
@@ -25,6 +27,7 @@ export class EventsService {
                 _id: id,
                 schedule: scheduleId
             })
+            .populate({ path: 'lesson', populate: 'lesson' })
 
         if(!event) throw new BadRequestException('Event is not found!')
 

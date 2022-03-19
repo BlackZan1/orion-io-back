@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose'
 
 // schemas
 import { Schedule } from 'src/schedules/schemas/schedules.schema'
+import { GroupLesson } from 'src/groups/schemas/groupLesson.schema'
 
 @Schema({
     versionKey: false,
@@ -15,14 +16,11 @@ import { Schedule } from 'src/schedules/schemas/schedules.schema'
     }
 })
 export class Event {
-    @Prop({ required: true })
-    title: string
+    @Prop({ required: true, type: Types.ObjectId, ref: GroupLesson.name })
+    lesson: GroupLesson
 
     @Prop({ required: true })
     description: string
-
-    @Prop({ required: true })
-    color: string
 
     @Prop({ required: true })
     startDate: string

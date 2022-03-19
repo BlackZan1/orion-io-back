@@ -29,8 +29,8 @@ import { GroupLesson, GroupLessonSchema } from './schemas/groupLesson.schema'
   imports: [
     StudySpaceModule,
     UsersModule,
-    SchedulesModule,
     forwardRef(() => NewsModule),
+    SchedulesModule,
     TokensModule,
     LessonsModule,
     MongooseModule.forFeature([

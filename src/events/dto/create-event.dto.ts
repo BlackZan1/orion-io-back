@@ -1,22 +1,18 @@
 import { 
     IsDateString,
-    IsHexColor, 
     IsNumber, 
     IsString, 
     Length, 
 } from 'class-validator'
+import { Types } from 'mongoose'
 
 export class CreateEventDto {
     @IsString()
-    @Length(1, 30)
-    readonly title: string
+    readonly lesson: string | Types.ObjectId
 
     @IsString()
     @Length(1, 150)
     readonly description: string
-
-    @IsHexColor()
-    readonly color: string
 
     @IsDateString()
     readonly startDate: string
