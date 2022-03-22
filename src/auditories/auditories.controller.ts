@@ -49,13 +49,13 @@ export class AuditoriesController {
     @ApiResponse({ status: 200, type: Auditory })
     @Get()
     async getAll(@Request() req, @Query() query) {
-        const { q } = query
         const { user } = req
         const studySpaceId = user.studySpace._id
 
-        const result = await this.auditoriesService.getByStudySpace(studySpaceId, q)
+        const result = await this.auditoriesService.getByStudySpace(studySpaceId, query)
 
         return {
+            isMore: result.length >= (query.limit || 10),
             result
         }
     }

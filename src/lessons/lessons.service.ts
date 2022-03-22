@@ -39,28 +39,28 @@ export class LessonsService {
         return this.getById(id, studySpaceId)
     }
 
-    async getByStudySpace(studySpaceId: any, q: string): Promise<LessonDocument[]> {
+    async getByStudySpace(studySpaceId: any, params: { page?: number, limit?: number, q?: string }): Promise<LessonDocument[]> {
+        const limit = +params.limit || 10
+        const page = +params.page || 1
+
         let modelProps: any = {
             studySpace: studySpaceId
         }
 
-        if(q) {
+        if(params.q) {
             modelProps = {
                 ...modelProps,
                 name: {
-                    $regex: q,
+                    $regex: params.q,
                     $options: 'i'
                 }
             }
         }
 
-        const count = await this.lessonsModel
-            .find(modelProps)
-            .count()
-
         return this.lessonsModel
             .find(modelProps)
-            .limit(count)
+            .limit(limit)
+            .skip((page * limit) - limit)
     }
 
     async delete(id: string, studySpaceId: any) {

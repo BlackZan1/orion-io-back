@@ -2,8 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 
+// services
+import { FilesService } from 'src/files/files.service'
+
 // dto
 import { CreateNewsDto } from './dto/create-news.dto'
+import { UpdateNewsDto } from './dto/update-news.dto'
 
 // schemas
 import { News, NewsDocument } from './schemas/news.schema'
@@ -11,7 +15,8 @@ import { News, NewsDocument } from './schemas/news.schema'
 @Injectable()
 export class NewsService {
     constructor(
-        @InjectModel(News.name) private newsModel: Model<NewsDocument>
+        @InjectModel(News.name) private newsModel: Model<NewsDocument>,
+        private filesService: FilesService
     ) {}
 
     async getById(id: string, groupId: any) {
@@ -32,8 +37,8 @@ export class NewsService {
     }
 
     async getAll(groupId: any, params: { page?: number, limit?: number }) {
-        const limit = params.limit || 10
-        const page = params.page || 1
+        const limit = +params.limit || 10
+        const page = +params.page || 1
 
         return this.newsModel
             .find({ group: groupId })
@@ -43,8 +48,14 @@ export class NewsService {
             .skip((page * limit) - limit)
     }
 
-    async update(id: string, groupId: any, dto: any) {
+    async update(id: string, groupId: any, dto: UpdateNewsDto) {
         const news = await this.getById(id, groupId)
+
+        if(news.image && dto.image) {
+            const oldDeleted = await this.filesService.removeFile(news.image)
+
+            console.log(oldDeleted)
+        }
 
         await news.updateOne(dto)
 

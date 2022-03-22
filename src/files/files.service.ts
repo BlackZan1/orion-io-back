@@ -26,4 +26,17 @@ export class FilesService {
             ...file
         }
     }
+
+    async removeFile(filePath: string): Promise<boolean> {
+        try {
+            await imgBucket.file(filePath).delete()
+
+            return true 
+        }
+        catch(err) {
+            console.log(err)
+
+            return false
+        }
+    }
 }

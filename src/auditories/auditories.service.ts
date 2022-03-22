@@ -26,7 +26,7 @@ export class AuditoriesService {
                 studySpace: studySpaceId
             })
 
-        if(!auditory) throw new BadRequestException('auditory not found!')
+        if(!auditory) throw new BadRequestException('Auditory not found!')
 
         return auditory
     }
@@ -39,28 +39,30 @@ export class AuditoriesService {
         return this.getById(id, studySpaceId)
     }
 
-    async getByStudySpace(studySpaceId: any, q: string): Promise<AuditoryDocument[]> {
+    async getByStudySpace(studySpaceId: any, params: { page?: number, limit?: number, q?: string }): Promise<AuditoryDocument[]> {
+        const limit = +params.limit || 10
+        const page = +params.page || 1
+
+        console.log('Auditories', limit, page)
+
         let modelProps: any = {
             studySpace: studySpaceId
         }
 
-        if(q) {
+        if(params.q) {
             modelProps = {
                 ...modelProps,
                 name: {
-                    $regex: q,
+                    $regex: params.q,
                     $options: 'i'
                 }
             }
         }
 
-        const count = await this.auditoryModel
-            .find(modelProps)
-            .count()
-
         return this.auditoryModel
             .find(modelProps)
-            .limit(count)
+            .limit(limit)
+            .skip((page * limit) - limit)
     }
 
     async delete(id: string, studySpaceId: any) {

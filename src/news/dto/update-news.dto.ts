@@ -1,7 +1,8 @@
 import { IsOptional, IsString } from 'class-validator'
 
-export class CreateNewsDto {
+export class UpdateNewsDto {
     @IsString()
+    @IsOptional()
     readonly title: string
 
     @IsString()

@@ -11,6 +11,7 @@ import { LessonsService } from 'src/lessons/lessons.service'
 
 // dto
 import { CreateGroupDto } from './dto/create-group.dto'
+import { UpdateGroupDto } from './dto/update-group.dto'
 import { CreateGroupLessonDto } from './dto/create-group-lesson.dto'
 
 // schemas
@@ -18,6 +19,7 @@ import { Group, GroupDocument } from './schemas/group.schema'
 import { TokenDocument } from 'src/tokens/schemas/token.schema'
 import { GroupLesson, GroupLessonDocument } from './schemas/groupLesson.schema'
 import { NewsDocument } from 'src/news/schemas/news.schema'
+import { UpdateGroupLessonDto } from './dto/update-group-lesson.dto'
 
 @Injectable()
 export class GroupsService {
@@ -46,7 +48,13 @@ export class GroupsService {
     async getAll(studySpaceId: any): Promise<GroupDocument[]> {
         return this.groupModel
             .find({ studySpace: studySpaceId })
-            .populate('members')
+            .populate({ 
+                path: 'members', 
+                select: '-password',
+                populate: {
+                    path: 'role'
+                }
+            })
             .populate('schedule')
     }
 
@@ -67,6 +75,12 @@ export class GroupsService {
         if(!group) throw new BadRequestException('Group is not found!')
 
         return group
+    }
+
+    async update(id: string, studySpaceId: any, dto: UpdateGroupDto) {
+        const group = await this.getById(id, studySpaceId)
+
+        return group.updateOne(dto)
     }
 
     async delete(id: string, studySpaceId: any) {
@@ -95,14 +109,17 @@ export class GroupsService {
         return this.groupModel
             .find({ studySpace: studySpaceId })
             .update({ $push: { members: userId } })
-            .populate('members')
+            .populate({ 
+                path: 'members', 
+                select: '-password'
+            })
             .populate('schedule')
     }
 
     async addSchedule(id: string, scheduleId: any, studySpaceId: any): Promise<GroupDocument> {
         const group = await this.getById(id, studySpaceId)
 
-        group.updateOne({ schedule: scheduleId })
+        await group.updateOne({ schedule: scheduleId })
 
         return this.getById(id, studySpaceId)
     }
@@ -210,6 +227,23 @@ export class GroupsService {
             })
             .populate('lesson')
             .populate('lector')
+    }
+
+    async updateLesson(id: string, lessonId: string, studySpaceId: any, dto: UpdateGroupLessonDto): Promise<GroupLessonDocument> {
+        const group = await this.getById(id, studySpaceId)
+        const groupLesson = await this.getLessonById(lessonId, group._id)
+
+        const newDto: any = { ...dto }
+
+        if(dto.lesson) {
+            const lesson = await this.lessonsService.getById(dto.lesson, studySpaceId)
+
+            newDto.lesson = lesson._id
+        }
+
+        await groupLesson.updateOne(newDto)
+
+        return this.getLessonById(lessonId, group._id)
     }
 
     async deleteLesson(id: string,studySpaceId: any, lessonId: string) {

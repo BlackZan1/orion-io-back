@@ -4,6 +4,7 @@ import { Document, Types } from 'mongoose'
 // schemas
 import { Schedule } from 'src/schedules/schemas/schedules.schema'
 import { GroupLesson } from 'src/groups/schemas/groupLesson.schema'
+import { StudySpace } from 'src/study-space/schemas/study-space.schema'
 
 @Schema({
     versionKey: false,
@@ -33,6 +34,9 @@ export class Event {
 
     @Prop({ required: true, type: Types.ObjectId, ref: Schedule.name })
     schedule: Schedule
+
+    @Prop({ required: true, type: Types.ObjectId, ref: StudySpace.name })
+    studySpace: StudySpace
 }
 
 export type EventDocument = Event & Document

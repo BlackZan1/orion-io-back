@@ -222,22 +222,36 @@ export class UsersService {
         return user
     }
 
-    async updatePhoto(id: string, file: MulterFile): Promise<any> {
+    async updatePhoto(id: string, file: MulterFile) {
+        const user = await this.userModel
+            .findById(id)
+
+        if(user.photo && file) {
+            const oldDeleted = await this.filesService.removeFile(user.photo)
+
+            console.log(oldDeleted)
+        }
+
         const uploadedFile = await this.filesService.uploadFile(file)
 
-        await this.userModel
-            .findByIdAndUpdate(id, { photo: uploadedFile.filename })
+        await user.updateOne({ photo: uploadedFile.filename })
 
         return {
             success: true
         }
     }
 
-    async update(id: string, dto: UpdateUserDto) {
-        await this.userModel.findByIdAndUpdate(id, dto)
+    async update(id: string, dto: UpdateUserDto): Promise<UserDocument> {
+        const user = await this.userModel
+            .findById(id)
+            .populate('role')
 
-        return {
-            success: true
+        if(user.photo && dto.photo) {
+            const oldDeleted = await this.filesService.removeFile(user.photo)
+
+            console.log(oldDeleted)
         }
+
+        return user.updateOne(dto)
     }
 }

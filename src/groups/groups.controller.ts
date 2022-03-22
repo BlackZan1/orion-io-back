@@ -10,7 +10,9 @@ import {
     Post, 
     Query, 
     Request,
-    UseGuards
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
 } from '@nestjs/common'
 import { 
     ApiBearerAuth, 
@@ -18,6 +20,8 @@ import {
     ApiResponse, 
     ApiTags 
 } from '@nestjs/swagger'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { MulterFile } from 'utils/multer-storage'
 
 // guards
 import { RolesGuard } from 'src/roles/guards/roles.guard'
@@ -32,6 +36,7 @@ import { RoleEnum } from 'src/roles/roles.enum'
 import { CreateGroupDto } from './dto/create-group.dto'
 import { AddUserDto } from './dto/add-user.dto'
 import { CreateGroupLessonDto } from './dto/create-group-lesson.dto'
+import { UpdateGroupDto } from './dto/update-group.dto'
 
 // services
 import { GroupsService } from './groups.service'
@@ -43,6 +48,7 @@ import { Token } from 'src/tokens/schemas/token.schema'
 import { User } from 'src/users/schemas/user.schema'
 import { News } from 'src/news/schemas/news.schema'
 import { GroupLesson } from './schemas/groupLesson.schema'
+import { UpdateGroupLessonDto } from './dto/update-group-lesson.dto'
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -88,6 +94,19 @@ export class GroupsController {
         }
 
         return this.groupsService.create(user._id, newDto)
+    }
+
+    @ApiOperation({ summary: 'Переименование группы в учебном пространстве' })
+    @ApiResponse({ status: 200, type: Group })
+    @Patch('/:id')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    async update(@Body() dto: UpdateGroupDto, @Request() req, @Param() params) {
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+        const { id } = params
+
+        return this.groupsService.update(id, studySpaceId, dto)
     }
 
     @ApiOperation({ summary: 'Удаление группы пользователя через ID' })
@@ -159,21 +178,9 @@ export class GroupsController {
         const result = await this.groupsService.getNews(id, studySpaceId, query)
 
         return {
+            isMore: result.length >= (query.limit || 10),
             result
         }
-    }
-
-    @ApiOperation({ summary: 'Редактирование новости группы через ID' })
-    @ApiResponse({ status: 200, type: News })
-    @Patch('/:id/news/:newsId')
-    @Roles(RoleEnum.Admin)
-    @UseGuards(RolesGuard)
-    async updateNews(@Param() params, @Request() req, @Body() dto: any) {
-        const { user } = req
-        const { id, newsId } = params
-        const studySpaceId = user.studySpace._id
-
-        return this.groupsService.updateNews(id, studySpaceId, newsId, dto)
     }
 
     @ApiOperation({ summary: 'Удаление новости группы через ID' })
@@ -217,6 +224,17 @@ export class GroupsController {
         const studySpaceId = user.studySpace._id
 
         return this.groupsService.createLesson(id, studySpaceId, dto)
+    }
+
+    @ApiOperation({ summary: 'Получение всех дисциплин группы через ID' })
+    @ApiResponse({ status: 200, type: GroupLesson })
+    @Patch('/:id/lessons/:lessonId')
+    async updateLesson(@Param() params, @Request() req, @Body() dto: UpdateGroupLessonDto) {
+        const { id, lessonId } = params
+        const { user } = req
+        const studySpaceId = user.studySpace._id
+
+        return this.groupsService.updateLesson(id, lessonId, studySpaceId, dto)
     }
 
     @ApiOperation({ summary: 'Удаление дисциплины группы через ID' })

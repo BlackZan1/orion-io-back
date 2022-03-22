@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, HttpCode, Param, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
@@ -24,6 +24,7 @@ import { RolesGuard } from 'src/roles/guards/roles.guard'
 
 // enum
 import { RoleEnum } from 'src/roles/roles.enum'
+import { UpdateNewsDto } from './dto/update-news.dto'
 
 @ApiTags('News')
 @ApiBearerAuth()
@@ -49,6 +50,7 @@ export class NewsController {
 
         let newDto = { 
             ...dto,
+            studySpace: user.studySpace._id,
             group: group._id,
             author: user._id
         }
@@ -60,5 +62,26 @@ export class NewsController {
         }
 
         return this.newsService.create(newDto)
+    }
+
+    @ApiOperation({ summary: 'Редактирование новости' })
+    @ApiResponse({ status: 200, type: News })
+    @Patch('/:id')
+    @Roles(RoleEnum.Admin, RoleEnum.SuperUser)
+    @UseGuards(RolesGuard)
+    @UseInterceptors(FileInterceptor('image'))
+    async update(@Body() dto: UpdateNewsDto, @Request() req, @UploadedFile() file: MulterFile, @Param() params) {
+        const { user } = req
+        const { id } = params
+
+        const group = await this.groupsService.getById(dto.group, user.studySpace._id)
+
+        if(file) {
+            const image = await this.filesService.uploadFile(file)
+
+            dto.image = image.filename as any
+        }
+
+        return this.newsService.update(id, group._id, dto)
     }
 }
