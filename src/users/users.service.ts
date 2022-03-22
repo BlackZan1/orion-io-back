@@ -236,9 +236,7 @@ export class UsersService {
 
         await user.updateOne({ photo: uploadedFile.filename })
 
-        return {
-            success: true
-        }
+        return this.getById(id)
     }
 
     async update(id: string, dto: UpdateUserDto): Promise<UserDocument> {
@@ -252,6 +250,8 @@ export class UsersService {
             console.log(oldDeleted)
         }
 
-        return user.updateOne(dto)
+        await user.updateOne(dto)
+
+        return this.getById(id)
     }
 }
