@@ -37,6 +37,7 @@ import { CreateGroupDto } from './dto/create-group.dto'
 import { AddUserDto } from './dto/add-user.dto'
 import { CreateGroupLessonDto } from './dto/create-group-lesson.dto'
 import { UpdateGroupDto } from './dto/update-group.dto'
+import { UpdateGroupLessonDto } from './dto/update-group-lesson.dto'
 
 // services
 import { GroupsService } from './groups.service'
@@ -48,7 +49,6 @@ import { Token } from 'src/tokens/schemas/token.schema'
 import { User } from 'src/users/schemas/user.schema'
 import { News } from 'src/news/schemas/news.schema'
 import { GroupLesson } from './schemas/groupLesson.schema'
-import { UpdateGroupLessonDto } from './dto/update-group-lesson.dto'
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -248,5 +248,21 @@ export class GroupsController {
         const studySpaceId = user.studySpace._id
 
         return this.groupsService.deleteLesson(id, studySpaceId, lessonId)
+    }
+
+    @ApiOperation({ summary: 'Импорт пользователя в группу через ID' })
+    @ApiResponse({ status: 201, type: GroupLesson })
+    @Post('/:id/import-user')
+    @Roles(RoleEnum.Admin)
+    @UseGuards(RolesGuard)
+    @HttpCode(201)
+    async importUser(@Param() params, @Request() req, @Body() dto: AddUserDto) {
+        const { user } = req
+        const { id } = params
+        const studySpaceId = user.studySpace._id
+
+        const currentUser = await this.usersService.getById(dto.userId, studySpaceId)
+
+        return this.groupsService.importUser(id, studySpaceId, currentUser._id, dto.deletePrev)
     }
 }

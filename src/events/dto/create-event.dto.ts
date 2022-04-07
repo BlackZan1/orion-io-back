@@ -23,5 +23,6 @@ export class CreateEventDto {
     @IsNumber()
     readonly day: number
 
+    studySpace: any
     schedule?: string
 }

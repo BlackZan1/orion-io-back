@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 
 // services
 import { StudySpaceService } from 'src/study-space/study-space.service'
@@ -57,6 +57,16 @@ export class GroupsService {
             })
             .populate('schedule')
     }
+
+    async getAllByUser(userId: any, studySpaceId: any): Promise<GroupDocument[]> {
+        return this.groupModel
+            .find({ 
+                studySpace: studySpaceId,
+                members: {
+                    '$in': [ userId ]
+                }
+            })
+    }   
 
     async getById(id: string, studySpaceId: any): Promise<GroupDocument> {
         const group = await this.groupModel
@@ -251,6 +261,33 @@ export class GroupsService {
         const lesson = await this.getLessonById(lessonId, group._id)
 
         await lesson.remove()
+
+        return {
+            success: true
+        }
+    }
+
+    async importUser(id: string, studySpaceId: any, userId: any, deletePrev: boolean) {
+        const group = await this.getById(id, studySpaceId)
+
+        if(deletePrev) {
+            await this.groupModel
+                .find({ 
+                    studySpace: studySpaceId,
+                    members: {
+                        $in: [ userId ]
+                    }
+                })
+                .updateMany({
+                    $pull: { members: userId }
+                })
+        }
+
+        if(group.members.find((i: any) => i.id === userId)) {
+            return group
+        }
+
+        await group.updateOne({ $push: { members: userId } })
 
         return {
             success: true

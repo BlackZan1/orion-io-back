@@ -94,6 +94,31 @@ export class UsersService {
         }
 
         if(query.teacher === '1') props.isTeacher = true
+        else if(query.teacher === '0') props.isTeacher = false
+
+        if(query.role) {
+            let role
+
+            switch(query.role.exclude) {
+                case 'admin':
+                    role = await this.rolesService.getAdmin()
+
+                    break
+                case 'superUser':
+                    role = await this.rolesService.getSuperUser()
+
+                    break
+                case 'user':
+                default:
+                    role = await this.rolesService.getUser()
+
+                    break
+            }
+
+            props['role._id'] = {
+                $not: { $eq: role._id }
+            }
+        }
         
         if(query.q) {
             const matchProps: any = {
@@ -103,14 +128,24 @@ export class UsersService {
 
             return this.userModel
                 .aggregate([
+                    {
+                        $lookup: {
+                            from: 'roles', 
+                            localField: 'role',
+                            foreignField: '_id', 
+                            as: 'role'
+                        }
+                    },
                     { 
                         $project: { 
                             firstName: '$firstName',
                             lastName: '$lastName',
                             studySpace: '$studySpace',
                             isTeacher: '$isTeacher',
+                            photo: '$photo',
+                            photoUrl: { $concat: [ 'https://firebasestorage.googleapis.com/v0/b/fir-monki-scoring.appspot.com/o/', '$photo', '?alt=media&token=751f5d3f-b41a-40a7-948a-6156f646f57d' ] },
+                            role: { $arrayElemAt: [ '$role', 0 ] },
                             fullname: { $concat: [ '$firstName', ' ', '$lastName' ] },
-                            doc: '$$ROOT'
                         } 
                     },
                     { 
@@ -120,10 +155,13 @@ export class UsersService {
                 .limit(20)
         }
 
+        props.role = props['role._id']
+        delete props['role._id']
+
         return this.userModel
             .find(props)
             .populate('role')
-            .limit(100)
+            .limit(20)
     }
 
     async getTeachers(studySpaceId: any, params: { page?: number, limit?: number }) {

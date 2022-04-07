@@ -45,11 +45,12 @@ export class SchedulesService {
         return schedule
     }
 
-    async addEvent(id: string, studySpaceId: string, dto: CreateEventDto): Promise<EventDocument> {
+    async addEvent(id: string, studySpaceId: any, dto: CreateEventDto): Promise<EventDocument> {
         const schedule = await this.getById(id, studySpaceId)
         const event = await this.eventsService.create({ 
             ...dto, 
             schedule: schedule._id,
+            studySpace: studySpaceId,
             lesson: new Types.ObjectId(dto.lesson)
         })
 

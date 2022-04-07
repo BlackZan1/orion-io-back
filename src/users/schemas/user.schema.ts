@@ -6,9 +6,6 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Role } from 'src/roles/schemas/role.schema'
 import { StudySpace } from 'src/study-space/schemas/study-space.schema'
 
-// config
-import configuration from 'config/configuration'
-
 @Schema({ 
     versionKey: false, 
     timestamps: true, 
